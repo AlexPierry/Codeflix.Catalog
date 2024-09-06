@@ -1,49 +1,14 @@
-using Application.Interfaces;
 using Application.UseCases.Category.UpdateCategory;
-using Domain.Entity;
-using Domain.Repository;
-using Moq;
+using UnitTests.Application.Common;
 
 namespace UnitTests.Application.UpdateCategory;
 
 [CollectionDefinition(nameof(UpdateCategoryTestFixture))]
 public class UpdateCategoryTestFixtureCollection : ICollectionFixture<UpdateCategoryTestFixture> { }
 
-public class UpdateCategoryTestFixture : BaseFixture
+public class UpdateCategoryTestFixture : CategoryBaseFixture
 {
-    public string GetValidCategoryName()
-    {
-        var categoryName = "";
-        while (categoryName.Length < 3)
-            categoryName = Faker.Commerce.Categories(1)[0];
-
-        if (categoryName.Length > 255)
-            categoryName = categoryName[..255];
-
-        return categoryName;
-    }
-
-    public string GetValidCategoryDescription()
-    {
-        var description = Faker.Commerce.ProductDescription();
-        if (description.Length > 10_000)
-            description = description[..10_000];
-
-        return description;
-    }
-
-    public bool GetRandomBoolean()
-    {
-        return new Random().NextDouble() < 0.5;
-    }
-
-    public Category GetValidCategory() => new Category(GetValidCategoryName(), GetValidCategoryDescription(), GetRandomBoolean());
-
-    public Mock<ICategoryRepository> GetRepositoryMock() => new();
-
-    public Mock<IUnitOfWork> GetUnitOfWorkMock() => new();
-
-    public UpdateCategoryInput GetValidInput(Guid? id)
+    public UpdateCategoryInput GetValidInput(Guid? id = null)
     {
         return new(
             id ?? Guid.NewGuid(),
@@ -51,5 +16,30 @@ public class UpdateCategoryTestFixture : BaseFixture
             GetValidCategoryDescription(),
             GetRandomBoolean()
         );
+    }
+
+    public UpdateCategoryInput GetInvalidInputShortName()
+    {
+        var invalidInputShortName = GetValidInput();
+        invalidInputShortName.Name = invalidInputShortName.Name.Substring(0, 2);
+        return invalidInputShortName;
+    }
+
+    public UpdateCategoryInput GetInvalidInputLongName()
+    {
+        var invalidInputTooLongName = GetValidInput();
+        while (invalidInputTooLongName.Name.Length <= 255)
+            invalidInputTooLongName.Name += " " + Faker.Commerce.ProductName();
+
+        return invalidInputTooLongName;
+    }
+
+    public UpdateCategoryInput GetInvalidInputLongDescription()
+    {
+        var invalidInputTooLongDescription = GetValidInput();
+        while (invalidInputTooLongDescription.Description?.Length <= 10_000)
+            invalidInputTooLongDescription.Description += " " + Faker.Commerce.ProductDescription();
+
+        return invalidInputTooLongDescription;
     }
 }
