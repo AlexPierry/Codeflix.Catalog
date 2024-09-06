@@ -12,10 +12,10 @@ public class Category : AggregateRoot
 
     public DateTime CreatedAt { get; private set; }
 
-    public Category(string name, string category, bool isActive = true) : base()
+    public Category(string name, string description, bool isActive = true) : base()
     {
         Name = name;
-        Description = category;
+        Description = description;
         IsActive = isActive;
         CreatedAt = DateTime.Now;
 
