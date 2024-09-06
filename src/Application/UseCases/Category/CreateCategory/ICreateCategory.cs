@@ -1,5 +1,7 @@
+using Application.UseCases.Category.Common;
+using MediatR;
+
 namespace Application.UseCases.Category.CreateCategory;
-public interface ICreateCategory
+public interface ICreateCategory : IRequestHandler<CreateCategoryInput, CategoryModelOutput>
 {
-    public Task<CreateCategoryOutput> Handle(CreateCategoryInput input, CancellationToken cancellationToken);
 }

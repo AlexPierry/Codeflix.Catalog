@@ -1,4 +1,3 @@
-using Domain.Exceptions;
 using Domain.SeedWork;
 
 namespace Domain.Entity;
