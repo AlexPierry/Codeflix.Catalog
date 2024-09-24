@@ -1,7 +1,6 @@
 using Domain.Entity;
-using Infra.Data.EF;
+using Domain.SeedWork.SearchableRepository;
 using IntegrationTest.Base;
-using Microsoft.EntityFrameworkCore;
 
 namespace IntegrationTest.Infra.Data.EF.Repositories.CategoryRepositories;
 
@@ -43,12 +42,32 @@ public class CategoryRepositoriesTestFixture : BaseFixture
         return Enumerable.Range(1, length).Select(_ => GetExampleCategory()).ToList();
     }
 
-    public CodeflixCatalogDbContext CreateDbContext()
+    public List<Category> GetExampleCategoriesListWithNames(List<string> names)
     {
-        return new CodeflixCatalogDbContext(
-            new DbContextOptionsBuilder<CodeflixCatalogDbContext>()
-            .UseInMemoryDatabase("integration-tests-db")
-            .Options
-        );
+        return names.Select(name =>
+        {
+            var category = GetExampleCategory();
+            category.Update(name);
+            return category;
+        }).ToList();
     }
+
+    public List<Category> CloneCategoryListOrdered(List<Category> categories, string orderBy, SearchOrder order)
+    {
+        var listClone = new List<Category>(categories);
+        var orderedEnumarable = (orderBy.ToLower(), order) switch
+        {
+            ("name", SearchOrder.Asc) => listClone.OrderBy(x => x.Name),
+            ("name", SearchOrder.Desc) => listClone.OrderByDescending(x => x.Name),
+            ("id", SearchOrder.Asc) => listClone.OrderBy(x => x.Id),
+            ("id", SearchOrder.Desc) => listClone.OrderByDescending(x => x.Id),
+            ("createdat", SearchOrder.Asc) => listClone.OrderBy(x => x.CreatedAt),
+            ("createdat", SearchOrder.Desc) => listClone.OrderByDescending(x => x.CreatedAt),
+            _ => listClone.OrderBy(x => x.Name)
+        };
+
+        return orderedEnumarable.ToList();
+    }
+
+
 }
