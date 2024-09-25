@@ -144,16 +144,17 @@ public class ListCategoryTest
         await dbContext.AddRangeAsync(exampleCategoriesList);
         await dbContext.SaveChangesAsync(CancellationToken.None);
         var categoryRepository = new CategoryRepository(dbContext);
-        var searchInput = new SearchInput(page, perPage, search, "", SearchOrder.Asc);
+        var input = new ListCategoriesInput(page, perPage, search, "", SearchOrder.Asc);
+        var useCase = new ListCategories(categoryRepository);
 
         // When
-        var output = await categoryRepository.Search(searchInput, CancellationToken.None);
+        var output = await useCase.Handle(input, CancellationToken.None);
 
         // Then        
         output.Should().NotBeNull();
         output.Items.Should().NotBeNull();
-        output.CurrentPage.Should().Be(searchInput.Page);
-        output.PerPage.Should().Be(searchInput.PerPage);
+        output.Page.Should().Be(input.Page);
+        output.PerPage.Should().Be(input.PerPage);
         output.Total.Should().Be(expectedTotalItems);
         output.Items.Should().HaveCount(expectedNumberOfItems);
         foreach (var outputItem in output.Items)
@@ -185,17 +186,18 @@ public class ListCategoryTest
         await dbContext.SaveChangesAsync(CancellationToken.None);
         var categoryRepository = new CategoryRepository(dbContext);
         var searchOrder = order.ToLower() == "asc" ? SearchOrder.Asc : SearchOrder.Desc;
-        var searchInput = new SearchInput(1, 20, "", orderBy, searchOrder);
+        var input = new ListCategoriesInput(1, 20, "", orderBy, searchOrder);
         var expectedOrderedList = _fixture.CloneCategoryListOrdered(exampleCategoriesList, orderBy, searchOrder);
+        var useCase = new ListCategories(categoryRepository);
 
         // When
-        var output = await categoryRepository.Search(searchInput, CancellationToken.None);
+        var output = await useCase.Handle(input, CancellationToken.None);
 
         // Then
         output.Should().NotBeNull();
         output.Items.Should().NotBeNull();
-        output.CurrentPage.Should().Be(searchInput.Page);
-        output.PerPage.Should().Be(searchInput.PerPage);
+        output.Page.Should().Be(input.Page);
+        output.PerPage.Should().Be(input.PerPage);
         output.Total.Should().Be(exampleCategoriesList.Count());
         output.Items.Should().HaveCount(exampleCategoriesList.Count);
         for (int index = 0; index < expectedOrderedList.Count(); index++)
