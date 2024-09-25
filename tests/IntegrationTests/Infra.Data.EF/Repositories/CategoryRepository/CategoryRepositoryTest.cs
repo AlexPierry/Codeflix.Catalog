@@ -4,7 +4,6 @@ using Domain.SeedWork.SearchableRepository;
 using FluentAssertions;
 using Infra.Data.EF;
 using Infra.Data.EF.Repositories;
-using Microsoft.EntityFrameworkCore;
 
 namespace IntegrationTest.Infra.Data.EF.Repositories.CategoryRepositories;
 
@@ -246,7 +245,7 @@ public class CategoryRepositoriesTest
     public async Task SearchByText(string search, int page, int perPage, int expectedNumberOfItems, int expectedTotalItems)
     {
         // Given
-        CodeflixCatalogDbContext dbContext = _fixture.CreateDbContext();
+        CodeflixCatalogDbContext dbContext = _fixture.CreateDbContext(false, Guid.NewGuid().ToString());
         var exampleCategoriesList = _fixture.GetExampleCategoriesListWithNames(new List<string>(){
             "Action",
             "Horror",

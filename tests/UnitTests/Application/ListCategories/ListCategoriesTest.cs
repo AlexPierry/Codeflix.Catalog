@@ -179,6 +179,4 @@ public class ListCategoriesTest
             It.IsAny<CancellationToken>()
         ), Times.Once);
     }
-
-
 }
