@@ -29,7 +29,22 @@ public class ApiClient
                     "application/json"));
 
         var outputString = await response.Content.ReadAsStringAsync();
-        
+
+        TOutput? output = null;
+        if (!string.IsNullOrEmpty(outputString))
+        {
+            output = JsonSerializer.Deserialize<TOutput>(outputString, _jsonSerializerOptions);
+        }
+
+        return (response, output);
+    }
+
+    public async Task<(HttpResponseMessage?, TOutput?)> Get<TOutput>(string route)
+        where TOutput : class
+    {
+        var response = await _httpClient.GetAsync(route);
+
+        var outputString = await response.Content.ReadAsStringAsync();
         TOutput? output = null;
         if (!string.IsNullOrEmpty(outputString))
         {

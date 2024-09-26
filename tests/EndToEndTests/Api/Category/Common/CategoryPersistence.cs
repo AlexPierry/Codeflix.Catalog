@@ -17,4 +17,10 @@ public class CategoryPersistence
     {
         return await _context.Categories.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
     }
+
+    public async Task InsertList(List<Entities.Category> exampleCategoryList)
+    {
+        await _context.Categories.AddRangeAsync(exampleCategoryList);
+        await _context.SaveChangesAsync();
+    }
 }

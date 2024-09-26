@@ -1,4 +1,5 @@
 using EndToEndTests.Base;
+using Entities = Domain.Entity;
 
 namespace EndToEndTests.Api.Category.Common;
 
@@ -37,4 +38,36 @@ public class CreateCategoryBaseFixture : BaseFixture
         return new Random().NextDouble() < 0.5;
     }
 
+
+    public string GetInvalidNameTooShort()
+    {
+        var invalidNameTooShort = GetValidCategoryName();
+        invalidNameTooShort = invalidNameTooShort.Substring(0, 2);
+        return invalidNameTooShort;
+    }
+
+    public string GetInvalidNameTooLong()
+    {
+        var invalidNameTooLong = GetValidCategoryName();
+        while (invalidNameTooLong.Length <= 255)
+            invalidNameTooLong += " " + Faker.Commerce.ProductName();
+
+        return invalidNameTooLong;
+    }
+
+    public string GetInvalidDescriptionTooLong()
+    {
+        var invalidDescriptionTooLong = GetValidCategoryDescription();
+        while (invalidDescriptionTooLong.Length <= 10_000)
+            invalidDescriptionTooLong += " " + Faker.Commerce.ProductDescription();
+
+        return invalidDescriptionTooLong;
+    }
+
+    public Entities.Category GetExampleCategory() => new Entities.Category(GetValidCategoryName(), GetValidCategoryDescription(), GetRandomBoolean());
+
+    public List<Entities.Category> GetExampleCategoriesList(int length = 10)
+    {
+        return Enumerable.Range(1, length).Select(_ => GetExampleCategory()).ToList();
+    }
 }

@@ -1,10 +1,12 @@
+using Api.Filters;
+
 namespace Api.Configurations;
 
 public static class ControllersConfiguration
 {
     public static IServiceCollection AddAndConfigureControllers(this IServiceCollection services)
     {
-        services.AddControllers();
+        services.AddControllers(options => options.Filters.Add(typeof(ApiGlobalExceptionFilter)));
         services.AddDocumentation();
 
         return services;
