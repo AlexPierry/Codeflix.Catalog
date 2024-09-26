@@ -4,14 +4,14 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace EndToEndTests.Api.Category.GetCategory;
+namespace EndToEndTests.Api.Category.DeleteCategory;
 
-[Collection(nameof(GetCategoryApiTestFixture))]
-public class GetCategoryApiTest : IDisposable
+[Collection(nameof(DeleteCategoryApiTestFixture))]
+public class DeleteCategoryApiTest : IDisposable
 {
-    private readonly GetCategoryApiTestFixture _fixture;
+    private readonly DeleteCategoryApiTestFixture _fixture;
 
-    public GetCategoryApiTest(GetCategoryApiTestFixture fixture)
+    public DeleteCategoryApiTest(DeleteCategoryApiTestFixture fixture)
     {
         _fixture = fixture;
     }
@@ -21,9 +21,9 @@ public class GetCategoryApiTest : IDisposable
         _fixture.CleanPercistence();
     }
 
-    [Fact(DisplayName = nameof(GetCategoryOk))]
-    [Trait("EndToEnd/API", "GetCategory - Endpoints")]
-    public async Task GetCategoryOk()
+    [Fact(DisplayName = nameof(DeleteCategoryOk))]
+    [Trait("EndToEnd/API", "DeleteCategory - Endpoints")]
+    public async Task DeleteCategoryOk()
     {
         // Given
         var exampleCategoryList = _fixture.GetExampleCategoriesList(10);
@@ -31,20 +31,18 @@ public class GetCategoryApiTest : IDisposable
         var exampleCategory = exampleCategoryList[5];
 
         // When
-        var (response, output) = await _fixture.ApiClient.Get<CategoryModelOutput>($"/categories/{exampleCategory.Id}");
+        var (response, output) = await _fixture.ApiClient.Delete<object>($"/categories/{exampleCategory.Id}");
 
         // Then
-        response!.StatusCode.Should().Be(HttpStatusCode.OK);
-        output.Should().NotBeNull();
-        output!.Id.Should().Be(exampleCategory.Id);
-        output.Name.Should().Be(exampleCategory.Name);
-        output.Description.Should().Be(exampleCategory.Description);
-        output.IsActive.Should().Be(exampleCategory.IsActive);
-        output.CreatedAt.Should().Be(exampleCategory.CreatedAt);
+        response.Should().NotBeNull();
+        response!.StatusCode.Should().Be(HttpStatusCode.NoContent);
+        output.Should().BeNull();
+        var percistenceCategory = await _fixture.Persistence.GetById(exampleCategory.Id);
+        percistenceCategory.Should().BeNull();
     }
 
     [Fact(DisplayName = nameof(NotFoundWhenCategoryDoesNotExist))]
-    [Trait("EndToEnd/API", "GetCategory - Endpoints")]
+    [Trait("EndToEnd/API", "DeleteCategory - Endpoints")]
     public async Task NotFoundWhenCategoryDoesNotExist()
     {
         // Given
@@ -53,7 +51,7 @@ public class GetCategoryApiTest : IDisposable
         var exampleCategoryId = Guid.NewGuid();
 
         // When
-        var (response, output) = await _fixture.ApiClient.Get<ProblemDetails>($"/categories/{exampleCategoryId}");
+        var (response, output) = await _fixture.ApiClient.Delete<ProblemDetails>($"/categories/{exampleCategoryId}");
 
         // Then
         response!.StatusCode.Should().Be(HttpStatusCode.NotFound);

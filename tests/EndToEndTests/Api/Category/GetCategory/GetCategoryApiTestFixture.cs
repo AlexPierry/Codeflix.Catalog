@@ -5,7 +5,7 @@ namespace EndToEndTests.Api.Category.GetCategory;
 [CollectionDefinition(nameof(GetCategoryApiTestFixture))]
 public class GetCategoryApiTestFixtureCollection : ICollectionFixture<GetCategoryApiTestFixture> { }
 
-public class GetCategoryApiTestFixture : CreateCategoryBaseFixture
+public class GetCategoryApiTestFixture : CategoryBaseFixture
 {
 
 }

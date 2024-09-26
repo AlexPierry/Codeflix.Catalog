@@ -7,13 +7,18 @@ using Microsoft.AspNetCore.Mvc;
 namespace EndToEndTests.Api.Category.CreateCategory;
 
 [Collection(nameof(CreateCategoryApiTestFixture))]
-public class CreateCategoryApiTest
+public class CreateCategoryApiTest : IDisposable
 {
     private readonly CreateCategoryApiTestFixture _fixture;
 
     public CreateCategoryApiTest(CreateCategoryApiTestFixture fixture)
     {
         _fixture = fixture;
+    }
+
+    public void Dispose()
+    {
+        _fixture.CleanPercistence();
     }
 
     [Fact(DisplayName = nameof(CreateCategoryOk))]

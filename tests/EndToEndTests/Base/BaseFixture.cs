@@ -30,4 +30,11 @@ public class BaseFixture
 
         return dbContext;
     }
+
+    public void CleanPercistence()
+    {
+        var dbContext = CreateDbContext();
+        dbContext.Database.EnsureDeleted();
+        dbContext.Database.EnsureCreated();
+    }
 }

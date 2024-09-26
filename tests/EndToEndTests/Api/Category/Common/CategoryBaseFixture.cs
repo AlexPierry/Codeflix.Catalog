@@ -3,11 +3,11 @@ using Entities = Domain.Entity;
 
 namespace EndToEndTests.Api.Category.Common;
 
-public class CreateCategoryBaseFixture : BaseFixture
+public class CategoryBaseFixture : BaseFixture
 {
     public CategoryPersistence Persistence { get; private set; }
 
-    public CreateCategoryBaseFixture() : base()
+    public CategoryBaseFixture() : base()
     {
         Persistence = new CategoryPersistence(CreateDbContext());
     }
