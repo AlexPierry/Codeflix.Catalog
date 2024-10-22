@@ -1,3 +1,4 @@
+using Api.Models.Category;
 using Application.UseCases.Category.Common;
 using Application.UseCases.Category.CreateCategory;
 using Application.UseCases.Category.DeleteCategory;
@@ -54,8 +55,9 @@ public class CategoriesController : ControllerBase
     [ProducesResponseType(typeof(CategoryModelOutput), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status422UnprocessableEntity)]
-    public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateCategoryInput input, CancellationToken cancellationToken)
+    public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateCategoryApiInput apiInput, CancellationToken cancellationToken)
     {
+        var input = new UpdateCategoryInput(id, apiInput.Name, apiInput.Description, apiInput.IsActive);
         var output = await _mediator.Send(input, cancellationToken);
         return Ok(output);
     }

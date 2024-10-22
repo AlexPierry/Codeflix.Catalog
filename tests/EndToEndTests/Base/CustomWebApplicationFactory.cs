@@ -10,8 +10,17 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
 {
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
+        builder.UseEnvironment("EndToEndTest");
         builder.ConfigureServices(services =>
         {
+            var serviceProvider = services.BuildServiceProvider();
+            using var scope = serviceProvider.CreateScope();
+            var context = scope.ServiceProvider.GetService<CodeflixCatalogDbContext>();
+            ArgumentNullException.ThrowIfNull(context);
+            context.Database.EnsureDeleted();
+            context.Database.EnsureCreated();
+
+            /* banco em memória
             var dbOptions = services.FirstOrDefault(x => x.ServiceType == typeof(DbContextOptions<CodeflixCatalogDbContext>));
             if (dbOptions != null)
             {
@@ -21,6 +30,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
             {
                 options.UseInMemoryDatabase("end2end-tests-db");
             });
+            */
         });
 
         base.ConfigureWebHost(builder);

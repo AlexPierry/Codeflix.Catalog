@@ -1,4 +1,4 @@
-using Application.UseCases.Category.UpdateCategory;
+using Api.Models.Category;
 using EndToEndTests.Api.Category.Common;
 
 namespace EndToEndTests.Api.Category.UpdateCategory;
@@ -9,10 +9,9 @@ public class UpdateCategoryApiTestFixtureCollection : ICollectionFixture<UpdateC
 public class UpdateCategoryApiTestFixture : CategoryBaseFixture
 {
 
-    public UpdateCategoryInput GetExampleInput(Guid? id = null)
+    public UpdateCategoryApiInput GetExampleInput()
     {
-        return new UpdateCategoryInput(
-            id ?? Guid.NewGuid(),
+        return new UpdateCategoryApiInput(
             GetValidCategoryName(),
             GetValidCategoryDescription(),
             GetRandomBoolean());

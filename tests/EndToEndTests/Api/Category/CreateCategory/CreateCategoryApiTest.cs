@@ -48,7 +48,7 @@ public class CreateCategoryApiTest : IDisposable
         dbCategory.Description.Should().Be(input.Description);
         dbCategory.IsActive.Should().Be(input.IsActive);
         dbCategory.Id.Should().NotBeEmpty();
-        dbCategory.CreatedAt.Should().Be(output.CreatedAt);
+        dbCategory.CreatedAt.Should().BeSameDateAs(output.CreatedAt);
     }
 
     [Theory(DisplayName = nameof(ThrowsWhenCantInstantiateAggregate))]

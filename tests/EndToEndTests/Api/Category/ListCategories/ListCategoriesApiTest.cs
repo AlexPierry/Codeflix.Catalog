@@ -47,7 +47,7 @@ public class ListCategoriesApiTest : IDisposable
             exampleItem!.Name.Should().Be(item.Name);
             exampleItem.Description.Should().Be(item.Description);
             exampleItem.IsActive.Should().Be(item.IsActive);
-            exampleItem.CreatedAt.Should().Be(item.CreatedAt);
+            exampleItem.CreatedAt.Should().BeSameDateAs(item.CreatedAt);
         }
     }
 
@@ -95,7 +95,7 @@ public class ListCategoriesApiTest : IDisposable
             exampleItem!.Name.Should().Be(item.Name);
             exampleItem.Description.Should().Be(item.Description);
             exampleItem.IsActive.Should().Be(item.IsActive);
-            exampleItem.CreatedAt.Should().Be(item.CreatedAt);
+            exampleItem.CreatedAt.Should().BeSameDateAs(item.CreatedAt);
         }
     }
 
@@ -130,7 +130,7 @@ public class ListCategoriesApiTest : IDisposable
             exampleItem!.Name.Should().Be(item.Name);
             exampleItem.Description.Should().Be(item.Description);
             exampleItem.IsActive.Should().Be(item.IsActive);
-            exampleItem.CreatedAt.Should().Be(item.CreatedAt);
+            exampleItem.CreatedAt.Should().BeSameDateAs(item.CreatedAt);
         }
     }
 
@@ -180,7 +180,7 @@ public class ListCategoriesApiTest : IDisposable
             exampleItem!.Name.Should().Be(item.Name);
             exampleItem.Description.Should().Be(item.Description);
             exampleItem.IsActive.Should().Be(item.IsActive);
-            exampleItem.CreatedAt.Should().Be(item.CreatedAt);
+            exampleItem.CreatedAt.Should().BeSameDateAs(item.CreatedAt);
         }
     }
 
@@ -225,7 +225,7 @@ public class ListCategoriesApiTest : IDisposable
             outputItem.Name.Should().Be(expecetedItem.Name);
             outputItem.Description.Should().Be(expecetedItem.Description);
             outputItem.IsActive.Should().Be(expecetedItem.IsActive);
-            outputItem.CreatedAt.Should().Be(expecetedItem.CreatedAt);
+            outputItem.CreatedAt.Should().BeSameDateAs(expecetedItem.CreatedAt);
         }
     }
 

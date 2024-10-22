@@ -1,4 +1,5 @@
 using System.Net;
+using Api.Models.Category;
 using Application.UseCases.Category.Common;
 using Application.UseCases.Category.UpdateCategory;
 using FluentAssertions;
@@ -30,7 +31,7 @@ public class UpdateCategoryApiTest : IDisposable
         var exampleCategoryList = _fixture.GetExampleCategoriesList(10);
         await _fixture.Persistence.InsertList(exampleCategoryList);
         var exampleCategory = exampleCategoryList[5];
-        var input = _fixture.GetExampleInput(exampleCategory.Id);
+        var input = _fixture.GetExampleInput();
 
         // When
         var (response, output) = await _fixture.ApiClient.Put<CategoryModelOutput>($"/categories/{exampleCategory.Id}", input);
@@ -39,12 +40,12 @@ public class UpdateCategoryApiTest : IDisposable
         response.Should().NotBeNull();
         response!.StatusCode.Should().Be(HttpStatusCode.OK);
         output.Should().NotBeNull();
-        output!.Id.Should().Be(input.Id);
+        output!.Id.Should().Be(exampleCategory.Id);
         output.Name.Should().Be(input.Name);
         output.Description.Should().Be(input.Description);
         output.IsActive.Should().Be((bool)input.IsActive!);
 
-        var percistenceCategory = await _fixture.Persistence.GetById(input.Id);
+        var percistenceCategory = await _fixture.Persistence.GetById(exampleCategory.Id);
         percistenceCategory.Should().NotBeNull();
         percistenceCategory!.Name.Should().Be(output.Name);
         percistenceCategory.Description.Should().Be(output.Description);
@@ -91,7 +92,7 @@ public class UpdateCategoryApiTest : IDisposable
         var exampleCategoryList = _fixture.GetExampleCategoriesList(10);
         await _fixture.Persistence.InsertList(exampleCategoryList);
         var exampleCategory = exampleCategoryList[5];
-        var input = new UpdateCategoryInput(exampleCategory.Id, _fixture.GetValidCategoryName(), _fixture.GetValidCategoryDescription());
+        var input = new UpdateCategoryApiInput(_fixture.GetValidCategoryName(), _fixture.GetValidCategoryDescription());
 
         // When
         var (response, output) = await _fixture.ApiClient.Put<CategoryModelOutput>($"/categories/{exampleCategory.Id}", input);
@@ -100,12 +101,12 @@ public class UpdateCategoryApiTest : IDisposable
         response.Should().NotBeNull();
         response!.StatusCode.Should().Be(HttpStatusCode.OK);
         output.Should().NotBeNull();
-        output!.Id.Should().Be(input.Id);
+        output!.Id.Should().Be(exampleCategory.Id);
         output.Name.Should().Be(input.Name);
         output.Description.Should().Be(input.Description);
         output.IsActive.Should().Be(exampleCategory.IsActive!);
 
-        var percistenceCategory = await _fixture.Persistence.GetById(input.Id);
+        var percistenceCategory = await _fixture.Persistence.GetById(exampleCategory.Id);
         percistenceCategory.Should().NotBeNull();
         percistenceCategory!.Name.Should().Be(output.Name);
         percistenceCategory.Description.Should().Be(input.Description);
@@ -120,10 +121,11 @@ public class UpdateCategoryApiTest : IDisposable
         // Given
         var exampleCategoryList = _fixture.GetExampleCategoriesList(10);
         await _fixture.Persistence.InsertList(exampleCategoryList);
-        var input = _fixture.GetExampleInput(Guid.NewGuid());
+        var randomId = Guid.NewGuid();
+        var input = _fixture.GetExampleInput();
 
         // When
-        var (response, output) = await _fixture.ApiClient.Put<ProblemDetails>($"/categories/{input.Id}", input);
+        var (response, output) = await _fixture.ApiClient.Put<ProblemDetails>($"/categories/{randomId}", input);
 
         // Then
         response.Should().NotBeNull();
@@ -131,7 +133,7 @@ public class UpdateCategoryApiTest : IDisposable
         output.Should().NotBeNull();
         output!.Status.Should().Be(StatusCodes.Status404NotFound);
         output.Title.Should().Be("Not Found");
-        output.Detail.Should().Be($"Category '{input.Id}' not found.");
+        output.Detail.Should().Be($"Category '{randomId}' not found.");
         output.Type.Should().Be("NotFound");
     }
 
@@ -140,16 +142,15 @@ public class UpdateCategoryApiTest : IDisposable
     [MemberData(
         nameof(UpdateCategoryApiTestDataGenerator.GetInvalidInputs),
         MemberType = typeof(UpdateCategoryApiTestDataGenerator))]
-    public async Task ErrorWhenCantInstantiateAggregate(UpdateCategoryInput invalidInput, string expectedDetail)
+    public async Task ErrorWhenCantInstantiateAggregate(UpdateCategoryApiInput invalidInput, string expectedDetail)
     {
         // Given
         var exampleCategoryList = _fixture.GetExampleCategoriesList(10);
         await _fixture.Persistence.InsertList(exampleCategoryList);
         var exampleCategory = exampleCategoryList[5];
-        invalidInput.Id = exampleCategory.Id;
 
         // When
-        var (response, output) = await _fixture.ApiClient.Put<ProblemDetails>($"/categories/{invalidInput.Id}", invalidInput);
+        var (response, output) = await _fixture.ApiClient.Put<ProblemDetails>($"/categories/{exampleCategoryList[5].Id}", invalidInput);
 
         // Then
         response.Should().NotBeNull();

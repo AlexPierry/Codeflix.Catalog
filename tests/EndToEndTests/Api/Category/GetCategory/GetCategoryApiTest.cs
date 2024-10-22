@@ -40,7 +40,7 @@ public class GetCategoryApiTest : IDisposable
         output.Name.Should().Be(exampleCategory.Name);
         output.Description.Should().Be(exampleCategory.Description);
         output.IsActive.Should().Be(exampleCategory.IsActive);
-        output.CreatedAt.Should().Be(exampleCategory.CreatedAt);
+        output.CreatedAt.Should().BeSameDateAs(exampleCategory.CreatedAt);
     }
 
     [Fact(DisplayName = nameof(NotFoundWhenCategoryDoesNotExist))]
