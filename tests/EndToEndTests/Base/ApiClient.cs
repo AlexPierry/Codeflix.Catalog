@@ -1,5 +1,6 @@
 using System.Text;
 using System.Text.Json;
+using Api.Configurations.Policies;
 using Microsoft.AspNetCore.WebUtilities;
 
 namespace EndToEndTests.Base;
@@ -14,7 +15,8 @@ public class ApiClient
         _httpClient = httpClient;
         _jsonSerializerOptions = new JsonSerializerOptions
         {
-            PropertyNameCaseInsensitive = true
+            PropertyNameCaseInsensitive = true,
+            PropertyNamingPolicy = new JsonSnakeCasePolicy()
         };
     }
 
@@ -25,7 +27,7 @@ public class ApiClient
             .PostAsync(
                 route,
                 new StringContent(
-                    JsonSerializer.Serialize(payload),
+                    JsonSerializer.Serialize(payload, _jsonSerializerOptions),
                     Encoding.UTF8,
                     "application/json"));
 
@@ -63,7 +65,7 @@ public class ApiClient
             return route;
         }
 
-        var parametersJson = JsonSerializer.Serialize(parameterObject);
+        var parametersJson = JsonSerializer.Serialize(parameterObject, _jsonSerializerOptions);
         var parametersDictionary = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, string>>(parametersJson);
 
         return QueryHelpers.AddQueryString(route, parametersDictionary!);
@@ -91,7 +93,7 @@ public class ApiClient
             .PutAsync(
                 route,
                 new StringContent(
-                    JsonSerializer.Serialize(payload),
+                    JsonSerializer.Serialize(payload, _jsonSerializerOptions),
                     Encoding.UTF8,
                     "application/json"));
 

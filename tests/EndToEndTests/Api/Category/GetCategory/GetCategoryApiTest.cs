@@ -1,4 +1,5 @@
 using System.Net;
+using Api.Models.Response;
 using Application.UseCases.Category.Common;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
@@ -31,16 +32,17 @@ public class GetCategoryApiTest : IDisposable
         var exampleCategory = exampleCategoryList[5];
 
         // When
-        var (response, output) = await _fixture.ApiClient.Get<CategoryModelOutput>($"/categories/{exampleCategory.Id}");
+        var (response, output) = await _fixture.ApiClient.Get<ApiResponse<CategoryModelOutput>>($"/categories/{exampleCategory.Id}");
 
         // Then
         response!.StatusCode.Should().Be(HttpStatusCode.OK);
         output.Should().NotBeNull();
-        output!.Id.Should().Be(exampleCategory.Id);
-        output.Name.Should().Be(exampleCategory.Name);
-        output.Description.Should().Be(exampleCategory.Description);
-        output.IsActive.Should().Be(exampleCategory.IsActive);
-        output.CreatedAt.Should().BeSameDateAs(exampleCategory.CreatedAt);
+        output!.Data.Should().NotBeNull();
+        output.Data.Id.Should().Be(exampleCategory.Id);
+        output.Data.Name.Should().Be(exampleCategory.Name);
+        output.Data.Description.Should().Be(exampleCategory.Description);
+        output.Data.IsActive.Should().Be(exampleCategory.IsActive);
+        output.Data.CreatedAt.Should().BeSameDateAs(exampleCategory.CreatedAt);
     }
 
     [Fact(DisplayName = nameof(NotFoundWhenCategoryDoesNotExist))]

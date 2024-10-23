@@ -1,5 +1,6 @@
 using System.Net;
 using Api.Models.Category;
+using Api.Models.Response;
 using Application.UseCases.Category.Common;
 using Application.UseCases.Category.UpdateCategory;
 using FluentAssertions;
@@ -34,24 +35,25 @@ public class UpdateCategoryApiTest : IDisposable
         var input = _fixture.GetExampleInput();
 
         // When
-        var (response, output) = await _fixture.ApiClient.Put<CategoryModelOutput>($"/categories/{exampleCategory.Id}", input);
+        var (response, output) = await _fixture.ApiClient.Put<ApiResponse<CategoryModelOutput>>($"/categories/{exampleCategory.Id}", input);
 
         // Then
         response.Should().NotBeNull();
         response!.StatusCode.Should().Be(HttpStatusCode.OK);
         output.Should().NotBeNull();
-        output!.Id.Should().Be(exampleCategory.Id);
-        output.Name.Should().Be(input.Name);
-        output.Description.Should().Be(input.Description);
-        output.IsActive.Should().Be((bool)input.IsActive!);
+        output!.Data.Should().NotBeNull();
+        output.Data.Id.Should().Be(exampleCategory.Id);
+        output.Data.Name.Should().Be(input.Name);
+        output.Data.Description.Should().Be(input.Description);
+        output.Data.IsActive.Should().Be((bool)input.IsActive!);
 
         var percistenceCategory = await _fixture.Persistence.GetById(exampleCategory.Id);
         percistenceCategory.Should().NotBeNull();
-        percistenceCategory!.Name.Should().Be(output.Name);
-        percistenceCategory.Description.Should().Be(output.Description);
-        percistenceCategory.IsActive.Should().Be(output.IsActive!);
-        percistenceCategory.Id.Should().Be(output.Id);
-        percistenceCategory.CreatedAt.Should().Be(output.CreatedAt);
+        percistenceCategory!.Name.Should().Be(output.Data.Name);
+        percistenceCategory.Description.Should().Be(output.Data.Description);
+        percistenceCategory.IsActive.Should().Be(output.Data.IsActive!);
+        percistenceCategory.Id.Should().Be(output.Data.Id);
+        percistenceCategory.CreatedAt.Should().Be(output.Data.CreatedAt);
     }
 
     [Fact(DisplayName = nameof(UpdateCategoryOnlyName))]
@@ -65,20 +67,21 @@ public class UpdateCategoryApiTest : IDisposable
         var input = new UpdateCategoryInput(exampleCategory.Id, _fixture.GetValidCategoryName());
 
         // When
-        var (response, output) = await _fixture.ApiClient.Put<CategoryModelOutput>($"/categories/{exampleCategory.Id}", input);
+        var (response, output) = await _fixture.ApiClient.Put<ApiResponse<CategoryModelOutput>>($"/categories/{exampleCategory.Id}", input);
 
         // Then
         response.Should().NotBeNull();
         response!.StatusCode.Should().Be(HttpStatusCode.OK);
         output.Should().NotBeNull();
-        output!.Id.Should().Be(input.Id);
-        output.Name.Should().Be(input.Name);
-        output.Description.Should().Be(exampleCategory.Description);
-        output.IsActive.Should().Be(exampleCategory.IsActive!);
+        output!.Data.Should().NotBeNull();
+        output.Data.Id.Should().Be(input.Id);
+        output.Data.Name.Should().Be(input.Name);
+        output.Data.Description.Should().Be(exampleCategory.Description);
+        output.Data.IsActive.Should().Be(exampleCategory.IsActive!);
 
         var percistenceCategory = await _fixture.Persistence.GetById(input.Id);
         percistenceCategory.Should().NotBeNull();
-        percistenceCategory!.Name.Should().Be(output.Name);
+        percistenceCategory!.Name.Should().Be(output.Data.Name);
         percistenceCategory.Description.Should().Be(exampleCategory.Description);
         percistenceCategory.IsActive.Should().Be(exampleCategory.IsActive!);
         percistenceCategory.Id.Should().Be(exampleCategory.Id);
@@ -95,20 +98,21 @@ public class UpdateCategoryApiTest : IDisposable
         var input = new UpdateCategoryApiInput(_fixture.GetValidCategoryName(), _fixture.GetValidCategoryDescription());
 
         // When
-        var (response, output) = await _fixture.ApiClient.Put<CategoryModelOutput>($"/categories/{exampleCategory.Id}", input);
+        var (response, output) = await _fixture.ApiClient.Put<ApiResponse<CategoryModelOutput>>($"/categories/{exampleCategory.Id}", input);
 
         // Then
         response.Should().NotBeNull();
         response!.StatusCode.Should().Be(HttpStatusCode.OK);
         output.Should().NotBeNull();
-        output!.Id.Should().Be(exampleCategory.Id);
-        output.Name.Should().Be(input.Name);
-        output.Description.Should().Be(input.Description);
-        output.IsActive.Should().Be(exampleCategory.IsActive!);
+        output!.Data.Should().NotBeNull();
+        output.Data.Id.Should().Be(exampleCategory.Id);
+        output.Data.Name.Should().Be(input.Name);
+        output.Data.Description.Should().Be(input.Description);
+        output.Data.IsActive.Should().Be(exampleCategory.IsActive!);
 
         var percistenceCategory = await _fixture.Persistence.GetById(exampleCategory.Id);
         percistenceCategory.Should().NotBeNull();
-        percistenceCategory!.Name.Should().Be(output.Name);
+        percistenceCategory!.Name.Should().Be(output.Data.Name);
         percistenceCategory.Description.Should().Be(input.Description);
         percistenceCategory.IsActive.Should().Be(exampleCategory.IsActive!);
         percistenceCategory.Id.Should().Be(exampleCategory.Id);
