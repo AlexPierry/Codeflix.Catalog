@@ -1,6 +1,6 @@
-using Domain.Entity;
+using Entities = Domain.Entity;
 
-namespace UnitTests.Domain.Entity;
+namespace UnitTests.Domain.Entity.Category;
 
 public class CategoryTestFixture : BaseFixture
 {
@@ -29,7 +29,7 @@ public class CategoryTestFixture : BaseFixture
         return description;
     }
 
-    public Category GetValidCategory() => new Category(GetValidCategoryName(), GetValidCategoryDescription());
+    public Entities.Category GetValidCategory() => new Entities.Category(GetValidCategoryName(), GetValidCategoryDescription());
 }
 
 [CollectionDefinition(nameof(CategoryTestFixture))]

@@ -1,8 +1,8 @@
-using Domain.Entity;
 using Domain.Exceptions;
 using FluentAssertions;
+using Entities = Domain.Entity;
 
-namespace UnitTests.Domain.Entity;
+namespace UnitTests.Domain.Entity.Category;
 
 [Collection(nameof(CategoryTestFixture))]
 public class CategoryTest
@@ -23,7 +23,7 @@ public class CategoryTest
         var datetimeBefore = DateTime.Now;
 
         // When
-        var category = new Category(validCategory.Name, validCategory.Description);
+        var category = new Entities.Category(validCategory.Name, validCategory.Description);
         var datetimeAfter = DateTime.Now;
 
         // Then
@@ -48,7 +48,7 @@ public class CategoryTest
         var datetimeBefore = DateTime.Now;
 
         // When
-        var category = new Category(validCategory.Name, validCategory.Description, isActive);
+        var category = new Entities.Category(validCategory.Name, validCategory.Description, isActive);
         var datetimeAfter = DateTime.Now;
 
         // Then
@@ -73,7 +73,7 @@ public class CategoryTest
         var validCategory = _categoryTestFixture.GetValidCategory();
 
         // When
-        Action action = () => new Category(name!, validCategory.Description);
+        Action action = () => new Entities.Category(name!, validCategory.Description);
 
         // Then
         action.Should().Throw<EntityValidationException>().WithMessage("Name should not be null or empty.");
@@ -87,7 +87,7 @@ public class CategoryTest
         var validCategory = _categoryTestFixture.GetValidCategory();
 
         // When
-        Action action = () => new Category(validCategory.Name, null!);
+        Action action = () => new Entities.Category(validCategory.Name, null!);
 
         // Then
         action.Should().Throw<EntityValidationException>().WithMessage("Description should not be null.");
@@ -102,7 +102,7 @@ public class CategoryTest
         var validCategory = _categoryTestFixture.GetValidCategory();
 
         // When
-        Action action = () => new Category(invalidName, validCategory.Description);
+        Action action = () => new Entities.Category(invalidName, validCategory.Description);
 
         // Then
         action.Should().Throw<EntityValidationException>().WithMessage("Name should not be less than 3 characters long.");
@@ -117,7 +117,7 @@ public class CategoryTest
         var invalidName = string.Join(null, Enumerable.Range(1, 256).Select(_ => "a").ToArray());
 
         // When
-        Action action = () => new Category(invalidName, validCategory.Description);
+        Action action = () => new Entities.Category(invalidName, validCategory.Description);
 
         // Then
         action.Should().Throw<EntityValidationException>().WithMessage("Name should not be greater than 255 characters long.");
@@ -132,7 +132,7 @@ public class CategoryTest
         var invalidDescription = string.Join(null, Enumerable.Range(1, 10001).Select(_ => "a").ToArray());
 
         // When
-        Action action = () => new Category(validCategory.Name, invalidDescription);
+        Action action = () => new Entities.Category(validCategory.Name, invalidDescription);
 
         // Then
         action.Should().Throw<EntityValidationException>().WithMessage("Description should not be greater than 10000 characters long.");
@@ -146,7 +146,7 @@ public class CategoryTest
         var validCategory = _categoryTestFixture.GetValidCategory();
 
         // When
-        var category = new Category(validCategory.Name, validCategory.Description, false);
+        var category = new Entities.Category(validCategory.Name, validCategory.Description, false);
         category.Activate();
 
         // Then
@@ -165,7 +165,7 @@ public class CategoryTest
         };
 
         // When
-        var category = new Category(validData.Name, validData.Description, true);
+        var category = new Entities.Category(validData.Name, validData.Description, true);
         category.Deactivate();
 
         // Then
