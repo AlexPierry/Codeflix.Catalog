@@ -1,4 +1,6 @@
 using Application.UseCases.Genre.CreateGenre;
+using Domain.Repository;
+using Moq;
 using UnitTests.Application.Genre.Common;
 
 namespace UnitTests.Application.Genre;

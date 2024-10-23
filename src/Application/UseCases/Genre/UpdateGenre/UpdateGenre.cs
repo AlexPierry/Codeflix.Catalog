@@ -2,35 +2,46 @@ using Application.Exceptions;
 using Application.Interfaces;
 using Application.UseCases.Genre.Common;
 using Domain.Repository;
-using Entities = Domain.Entity;
 
-namespace Application.UseCases.Genre.CreateGenre;
+namespace Application.UseCases.Genre.UpdateGenre;
 
-public class CreateGenre : ICreateGenre
+public class UpdateGenre : IUpdateGenre
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IGenreRepository _genreRepository;
     private readonly ICategoryRepository _categoryRepository;
 
-    public CreateGenre(IGenreRepository genreRepository, IUnitOfWork unitOfWork, ICategoryRepository categoryRepository)
+    public UpdateGenre(IGenreRepository genreRepository, IUnitOfWork unitOfWork, ICategoryRepository categoryRepository)
     {
         _genreRepository = genreRepository;
         _unitOfWork = unitOfWork;
         _categoryRepository = categoryRepository;
     }
 
-    public async Task<GenreModelOutput> Handle(CreateGenreInput input, CancellationToken cancellationToken)
+    public async Task<GenreModelOutput> Handle(UpdateGenreInput request, CancellationToken cancellationToken)
     {
-        var genre = new Entities.Genre(input.Name, input.IsActive);
+        var currentGenre = await _genreRepository.Get(request.Id, cancellationToken);
+        currentGenre.Update(request.Name);
 
-        await ValidateCategoryIds(input.Categories, cancellationToken);
+        if (request.IsActive != null && request.IsActive != currentGenre.IsActive)
+        {
+            if ((bool)request.IsActive)
+                currentGenre.Activate();
+            else
+                currentGenre.Deactivate();
+        }
 
-        input.Categories?.ForEach(genre.AddCategory);
+        if (request.Categories is not null)
+        {
+            await ValidateCategoryIds(request.Categories, cancellationToken);
+            currentGenre.RemoveAllCategories();
+            request.Categories.ForEach(currentGenre.AddCategory);
+        }
 
-        await _genreRepository.Insert(genre, cancellationToken);
+        await _genreRepository.Update(currentGenre, cancellationToken);
         await _unitOfWork.Commit(cancellationToken);
 
-        return GenreModelOutput.FromGenre(genre);
+        return GenreModelOutput.FromGenre(currentGenre);
     }
 
     private async Task ValidateCategoryIds(List<Guid>? categoryIds, CancellationToken cancellationToken)
