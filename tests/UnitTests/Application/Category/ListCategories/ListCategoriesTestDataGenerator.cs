@@ -1,6 +1,6 @@
 using Application.UseCases.Category.ListCategories;
 
-namespace UnitTests.Application.ListCategories;
+namespace UnitTests.Application.Category;
 
 public class ListCategoriesTestDataGenerator
 {

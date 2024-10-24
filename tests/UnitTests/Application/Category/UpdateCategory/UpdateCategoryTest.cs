@@ -1,13 +1,13 @@
 using Application.Exceptions;
 using Application.UseCases.Category.Common;
 using Application.UseCases.Category.UpdateCategory;
-using Domain.Entity;
+using Entities = Domain.Entity;
 using Domain.Exceptions;
 using FluentAssertions;
 using Moq;
 using UseCase = Application.UseCases.Category.UpdateCategory;
 
-namespace UnitTests.Application.UpdateCategory;
+namespace UnitTests.Application.Category;
 
 [Collection(nameof(UpdateCategoryTestFixture))]
 public class UpdateCategoryTest
@@ -26,7 +26,7 @@ public class UpdateCategoryTest
         parameters: 10,
         MemberType = typeof(UpdateCategoryTestDataGenerator)
     )]
-    public async void UpdateOk(Category exampleCategory, UpdateCategoryInput input)
+    public async void UpdateOk(Entities.Category exampleCategory, UpdateCategoryInput input)
     {
         // Given
         var repositoryMock = _fixture.GetRepositoryMock();
@@ -69,7 +69,7 @@ public class UpdateCategoryTest
         // Then
         await task.Should().ThrowAsync<NotFoundException>();
         repositoryMock.Verify(x => x.Get(exampleGuid, It.IsAny<CancellationToken>()), Times.Once);
-        repositoryMock.Verify(x => x.Update(It.IsAny<Category>(), It.IsAny<CancellationToken>()), Times.Never);
+        repositoryMock.Verify(x => x.Update(It.IsAny<Entities.Category>(), It.IsAny<CancellationToken>()), Times.Never);
         unitOfWork.Verify(x => x.Commit(It.IsAny<CancellationToken>()), Times.Never);
     }
 
@@ -80,7 +80,7 @@ public class UpdateCategoryTest
         parameters: 10,
         MemberType = typeof(UpdateCategoryTestDataGenerator)
     )]
-    public async void UpdateCategoryNotProvidingIsActive(Category exampleCategory, UpdateCategoryInput exampleInput)
+    public async void UpdateCategoryNotProvidingIsActive(Entities.Category exampleCategory, UpdateCategoryInput exampleInput)
     {
         // Given
         var input = new UpdateCategoryInput(exampleInput.Id, exampleInput.Name, exampleInput.Description);
@@ -112,7 +112,7 @@ public class UpdateCategoryTest
         parameters: 10,
         MemberType = typeof(UpdateCategoryTestDataGenerator)
     )]
-    public async void UpdateCategoryProvidingOnlyName(Category exampleCategory, UpdateCategoryInput exampleInput)
+    public async void UpdateCategoryProvidingOnlyName(Entities.Category exampleCategory, UpdateCategoryInput exampleInput)
     {
         // Given
         var input = new UpdateCategoryInput(exampleInput.Id, exampleInput.Name);

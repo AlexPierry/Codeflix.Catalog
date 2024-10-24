@@ -1,7 +1,7 @@
 using Application.UseCases.Category.UpdateCategory;
 using FluentAssertions;
 
-namespace UnitTests.Application.UpdateCategory;
+namespace UnitTests.Application.Category;
 
 [Collection(nameof(UpdateCategoryTestFixture))]
 public class UpdateCategoryInputValidatorTest

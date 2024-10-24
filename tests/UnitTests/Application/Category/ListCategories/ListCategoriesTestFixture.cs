@@ -1,18 +1,18 @@
 using Application.UseCases.Category.ListCategories;
-using Domain.Entity;
 using Domain.SeedWork.SearchableRepository;
 using UnitTests.Application.Common;
+using Entities = Domain.Entity;
 
-namespace UnitTests.Application.ListCategories;
+namespace UnitTests.Application.Category;
 
 [CollectionDefinition(nameof(ListCategoriesTestFixture))]
 public class ListCategoryTestFixtureCollection : ICollectionFixture<ListCategoriesTestFixture> { }
 
 public class ListCategoriesTestFixture : CategoryBaseFixture
 {
-    public List<Category> GetExampleCategoriesList(int length = 10)
+    public List<Entities.Category> GetExampleCategoriesList(int length = 10)
     {
-        var list = new List<Category>();
+        var list = new List<Entities.Category>();
         for (int index = 0; index < length; index++)
         {
             list.Add(GetExampleCategory());

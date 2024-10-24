@@ -1,7 +1,7 @@
 using Application.UseCases.Genre.GetGenre;
 using UnitTests.Application.Genre.Common;
 
-namespace UnitTests.Application.Genre.GetGenre;
+namespace UnitTests.Application.Genre;
 
 [CollectionDefinition(nameof(GetGenreTestFixture))]
 public class GetGenreTestFixtureCollection : ICollectionFixture<GetGenreTestFixture> { }

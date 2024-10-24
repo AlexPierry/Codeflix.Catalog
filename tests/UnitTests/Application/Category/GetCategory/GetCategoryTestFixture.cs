@@ -1,7 +1,6 @@
-using Domain.Entity;
 using UnitTests.Application.Common;
 
-namespace UnitTests.Application.GetCategory;
+namespace UnitTests.Application.Category;
 
 [CollectionDefinition(nameof(GetCategoryTestFixture))]
 public class GetCategoryTestFixtureCollection : ICollectionFixture<GetCategoryTestFixture> { }

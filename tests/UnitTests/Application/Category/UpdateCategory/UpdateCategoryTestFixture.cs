@@ -1,7 +1,7 @@
 using Application.UseCases.Category.UpdateCategory;
 using UnitTests.Application.Common;
 
-namespace UnitTests.Application.UpdateCategory;
+namespace UnitTests.Application.Category;
 
 [CollectionDefinition(nameof(UpdateCategoryTestFixture))]
 public class UpdateCategoryTestFixtureCollection : ICollectionFixture<UpdateCategoryTestFixture> { }

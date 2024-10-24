@@ -1,7 +1,7 @@
 using Application.UseCases.Category.DeleteCategory;
 using FluentAssertions;
 
-namespace UnitTests.Application.DeleteCategory;
+namespace UnitTests.Application.Category;
 
 [Collection(nameof(DeleteCategoryTestFixture))]
 public class DeleteCategoryInputValidatorTest

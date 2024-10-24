@@ -3,7 +3,7 @@ using FluentAssertions;
 using Moq;
 using UseCase = Application.UseCases.Category.GetCategory;
 
-namespace UnitTests.Application.GetCategory;
+namespace UnitTests.Application.Category;
 
 [Collection(nameof(GetCategoryTestFixture))]
 public class GetCategoryTest

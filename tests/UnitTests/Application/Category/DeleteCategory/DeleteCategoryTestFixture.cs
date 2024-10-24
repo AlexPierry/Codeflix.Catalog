@@ -1,6 +1,6 @@
 using UnitTests.Application.Common;
 
-namespace UnitTests.Application.DeleteCategory;
+namespace UnitTests.Application.Category;
 
 [CollectionDefinition(nameof(DeleteCategoryTestFixture))]
 public class DeleteCategoryTestFixtureCollection : ICollectionFixture<DeleteCategoryTestFixture> { }

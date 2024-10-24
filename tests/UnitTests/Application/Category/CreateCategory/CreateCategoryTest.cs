@@ -1,10 +1,10 @@
 using UseCase = Application.UseCases.Category.CreateCategory;
-using Domain.Entity;
+using Entities = Domain.Entity;
 using Domain.Exceptions;
 using FluentAssertions;
 using Moq;
 
-namespace UnitTests.Application.CreateCategory;
+namespace UnitTests.Application.Category;
 
 [Collection(nameof(CreateCategoryTestFixture))]
 public class CreateCategoryTest
@@ -31,7 +31,7 @@ public class CreateCategoryTest
         var output = await useCase.Handle(input, CancellationToken.None);
 
         // Then
-        repositoryMock.Verify(repository => repository.Insert(It.IsAny<Category>(), It.IsAny<CancellationToken>()), Times.Once);
+        repositoryMock.Verify(repository => repository.Insert(It.IsAny<Entities.Category>(), It.IsAny<CancellationToken>()), Times.Once);
         unitOfWorkMock.Verify(unitOfWork => unitOfWork.Commit(It.IsAny<CancellationToken>()), Times.Once);
 
         output.Should().NotBeNull();
@@ -77,7 +77,7 @@ public class CreateCategoryTest
         var output = await useCase.Handle(input, CancellationToken.None);
 
         // Then
-        repositoryMock.Verify(repository => repository.Insert(It.IsAny<Category>(), It.IsAny<CancellationToken>()), Times.Once);
+        repositoryMock.Verify(repository => repository.Insert(It.IsAny<Entities.Category>(), It.IsAny<CancellationToken>()), Times.Once);
         unitOfWorkMock.Verify(unitOfWork => unitOfWork.Commit(It.IsAny<CancellationToken>()), Times.Once);
 
         output.Should().NotBeNull();
@@ -105,7 +105,7 @@ public class CreateCategoryTest
         var output = await useCase.Handle(input, CancellationToken.None);
 
         // Then
-        repositoryMock.Verify(repository => repository.Insert(It.IsAny<Category>(), It.IsAny<CancellationToken>()), Times.Once);
+        repositoryMock.Verify(repository => repository.Insert(It.IsAny<Entities.Category>(), It.IsAny<CancellationToken>()), Times.Once);
         unitOfWorkMock.Verify(unitOfWork => unitOfWork.Commit(It.IsAny<CancellationToken>()), Times.Once);
 
         output.Should().NotBeNull();

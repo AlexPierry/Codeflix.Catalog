@@ -1,4 +1,4 @@
-namespace UnitTests.Application.CreateCategory;
+namespace UnitTests.Application.Category;
 
 public class CreateCategoryTestDataGenerator
 {

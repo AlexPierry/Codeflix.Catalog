@@ -1,4 +1,4 @@
-namespace UnitTests.Application.UpdateCategory;
+namespace UnitTests.Application.Category;
 
 public class UpdateCategoryTestDataGenerator
 {

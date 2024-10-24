@@ -1,7 +1,7 @@
 using Application.UseCases.Category.GetCategory;
 using FluentAssertions;
 
-namespace UnitTests.Application.GetCategory;
+namespace UnitTests.Application.Category;
 
 [Collection(nameof(GetCategoryTestFixture))]
 public class GetCategoryInputValidatorTest

@@ -2,7 +2,7 @@ using Application.UseCases.Category.CreateCategory;
 using Bogus;
 using UnitTests.Application.Common;
 
-namespace UnitTests.Application.CreateCategory;
+namespace UnitTests.Application.Category;
 
 [CollectionDefinition(nameof(CreateCategoryTestFixture))]
 public class CreateCategoryTestFixtureCollection : ICollectionFixture<CreateCategoryTestFixture> { }

@@ -1,5 +1,5 @@
 using Application.Interfaces;
-using Domain.Entity;
+using Entities = Domain.Entity;
 using Domain.Repository;
 using Moq;
 
@@ -35,5 +35,5 @@ public abstract class CategoryBaseFixture : BaseFixture
         return new Random().NextDouble() < 0.5;
     }
 
-    public Category GetExampleCategory() => new Category(GetValidCategoryName(), GetValidCategoryDescription(), GetRandomBoolean());
+    public Entities.Category GetExampleCategory() => new Entities.Category(GetValidCategoryName(), GetValidCategoryDescription(), GetRandomBoolean());
 }

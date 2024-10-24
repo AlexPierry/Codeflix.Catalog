@@ -1,12 +1,12 @@
 using Application.UseCases.Category.Common;
 using Application.UseCases.Category.ListCategories;
-using Domain.Entity;
+using Entities = Domain.Entity;
 using Domain.SeedWork.SearchableRepository;
 using FluentAssertions;
 using Moq;
 using UseCase = Application.UseCases.Category.ListCategories;
 
-namespace UnitTests.Application.ListCategories;
+namespace UnitTests.Application.Category;
 
 [Collection(nameof(ListCategoriesTestFixture))]
 public class ListCategoriesTest
@@ -26,7 +26,7 @@ public class ListCategoriesTest
         var categoriesExampleList = _fixture.GetExampleCategoriesList();
         var repositoryMock = _fixture.GetRepositoryMock();
         var input = _fixture.GetExampleInput();
-        var outputRepositorySearch = new SearchOutput<Category>(
+        var outputRepositorySearch = new SearchOutput<Entities.Category>(
             currentPage: input.Page,
             perPage: input.PerPage,
             items: categoriesExampleList,
@@ -42,7 +42,7 @@ public class ListCategoriesTest
                 && searchInput.Order == input.Dir),
             It.IsAny<CancellationToken>())).ReturnsAsync(outputRepositorySearch);
 
-        var useCase = new UseCase.ListCategories(repositoryMock.Object);
+        var useCase = new ListCategories(repositoryMock.Object);
 
         // When
         var output = await useCase.Handle(input, CancellationToken.None);
@@ -86,7 +86,7 @@ public class ListCategoriesTest
         // Given
         var categoriesExampleList = _fixture.GetExampleCategoriesList();
         var repositoryMock = _fixture.GetRepositoryMock();
-        var outputRepositorySearch = new SearchOutput<Category>(
+        var outputRepositorySearch = new SearchOutput<Entities.Category>(
             currentPage: input.Page,
             perPage: input.PerPage,
             items: categoriesExampleList,
@@ -102,7 +102,7 @@ public class ListCategoriesTest
                 && searchInput.Order == input.Dir),
             It.IsAny<CancellationToken>())).ReturnsAsync(outputRepositorySearch);
 
-        var useCase = new UseCase.ListCategories(repositoryMock.Object);
+        var useCase = new ListCategories(repositoryMock.Object);
 
         // When
         var output = await useCase.Handle(input, CancellationToken.None);
@@ -141,10 +141,10 @@ public class ListCategoriesTest
         // Given        
         var repositoryMock = _fixture.GetRepositoryMock();
         var input = _fixture.GetExampleInput();
-        var outputRepositorySearch = new SearchOutput<Category>(
+        var outputRepositorySearch = new SearchOutput<Entities.Category>(
             currentPage: input.Page,
             perPage: input.PerPage,
-            items: new List<Category>().AsReadOnly(),
+            items: new List<Entities.Category>().AsReadOnly(),
             total: 0
         );
 
@@ -157,7 +157,7 @@ public class ListCategoriesTest
                 && searchInput.Order == input.Dir),
             It.IsAny<CancellationToken>())).ReturnsAsync(outputRepositorySearch);
 
-        var useCase = new UseCase.ListCategories(repositoryMock.Object);
+        var useCase = new ListCategories(repositoryMock.Object);
 
         // When
         var output = await useCase.Handle(input, CancellationToken.None);
