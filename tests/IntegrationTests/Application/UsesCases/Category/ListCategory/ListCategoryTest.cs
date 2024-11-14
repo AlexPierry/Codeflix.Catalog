@@ -4,7 +4,7 @@ using Domain.SeedWork.SearchableRepository;
 using FluentAssertions;
 using Infra.Data.EF.Repositories;
 
-namespace IntegrationTest.Application.UseCases.Category.ListCategory;
+namespace IntegrationTest.Application.UseCases.Category;
 
 [Collection(nameof(ListCategoriesTestFixture))]
 public class ListCategoryTest

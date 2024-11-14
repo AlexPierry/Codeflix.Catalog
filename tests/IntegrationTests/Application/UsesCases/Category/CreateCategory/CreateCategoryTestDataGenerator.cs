@@ -1,4 +1,4 @@
-namespace IntegrationTest.Application.UseCases.Category.CreateCategory;
+namespace IntegrationTest.Application.UseCases.Category;
 
 public class CreateCategoryTestDataGenerator
 {

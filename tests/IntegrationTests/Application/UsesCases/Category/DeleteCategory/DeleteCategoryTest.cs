@@ -5,7 +5,7 @@ using Infra.Data.EF.Repositories;
 using Microsoft.EntityFrameworkCore;
 using UseCase = Application.UseCases.Category.DeleteCategory;
 
-namespace IntegrationTest.Application.UseCases.Category.DeleteCategory;
+namespace IntegrationTest.Application.UseCases.Category;
 
 [Collection(nameof(DeleteCategoryTestFixture))]
 public class DeleteCategoryTest

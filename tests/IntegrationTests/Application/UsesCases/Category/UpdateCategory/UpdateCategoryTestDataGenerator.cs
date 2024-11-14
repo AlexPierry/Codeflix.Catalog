@@ -1,4 +1,4 @@
-namespace IntegrationTest.Application.UseCases.Category.UpdateCategory;
+namespace IntegrationTest.Application.UseCases.Category;
 
 public class UpdateCategoryTestDataGenerator
 {

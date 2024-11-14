@@ -1,6 +1,6 @@
 using IntegrationTest.Application.UseCases.Category.Common;
 
-namespace IntegrationTest.Application.UseCases.Category.GetCategory;
+namespace IntegrationTest.Application.UseCases.Category;
 
 [CollectionDefinition(nameof(GetCategoryTestFixture))]
 public class GetCategoryTestFixtureCollection : ICollectionFixture<GetCategoryTestFixture> { }

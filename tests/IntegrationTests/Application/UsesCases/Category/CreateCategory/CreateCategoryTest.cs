@@ -5,7 +5,7 @@ using Infra.Data.EF.Repositories;
 using Microsoft.EntityFrameworkCore;
 using UseCase = Application.UseCases.Category.CreateCategory;
 
-namespace IntegrationTest.Application.UseCases.Category.CreateCategory;
+namespace IntegrationTest.Application.UseCases.Category;
 
 [Collection(nameof(CreateCategoryTestFixture))]
 public class CreateCategoryTest

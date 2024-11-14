@@ -7,7 +7,7 @@ using Infra.Data.EF.Repositories;
 using Entities = Domain.Entity;
 using UseCase = Application.UseCases.Category.UpdateCategory;
 
-namespace IntegrationTest.Application.UseCases.Category.UpdateCategory;
+namespace IntegrationTest.Application.UseCases.Category;
 
 [Collection(nameof(UpdateCategoryTestFixture))]
 public class UpdateCategoryTest

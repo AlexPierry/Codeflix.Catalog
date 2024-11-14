@@ -1,6 +1,6 @@
 using Application.UseCases.Category.ListCategories;
 
-namespace IntegrationTest.Application.UseCases.Category.ListCategory;
+namespace IntegrationTest.Application.UseCases.Category;
 
 public class ListCategoriesTestDataGenerator
 {

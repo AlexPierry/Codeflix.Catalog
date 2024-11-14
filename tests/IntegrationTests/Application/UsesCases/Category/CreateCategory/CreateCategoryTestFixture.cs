@@ -1,7 +1,7 @@
 using Application.UseCases.Category.CreateCategory;
 using IntegrationTest.Application.UseCases.Category.Common;
 
-namespace IntegrationTest.Application.UseCases.Category.CreateCategory;
+namespace IntegrationTest.Application.UseCases.Category;
 
 [CollectionDefinition(nameof(CreateCategoryTestFixture))]
 public class CreateCategoryTestFixtureCollection : ICollectionFixture<CreateCategoryTestFixture>

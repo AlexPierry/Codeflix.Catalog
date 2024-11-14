@@ -3,7 +3,7 @@ using Domain.SeedWork.SearchableRepository;
 using IntegrationTest.Application.UseCases.Category.Common;
 using Entities = Domain.Entity;
 
-namespace IntegrationTest.Application.UseCases.Category.ListCategory;
+namespace IntegrationTest.Application.UseCases.Category;
 
 [CollectionDefinition(nameof(ListCategoriesTestFixture))]
 public class ListCategoriesTestFixtureCollection : ICollectionFixture<ListCategoriesTestFixture> { }

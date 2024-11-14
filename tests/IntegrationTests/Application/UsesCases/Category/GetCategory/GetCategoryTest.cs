@@ -1,7 +1,6 @@
 using Application.Exceptions;
 using FluentAssertions;
 using Infra.Data.EF.Repositories;
-using IntegrationTest.Application.UseCases.Category.GetCategory;
 using UseCase = Application.UseCases.Category.GetCategory;
 
 namespace IntegrationTest.Application.UseCases.Category;
