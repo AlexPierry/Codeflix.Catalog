@@ -22,7 +22,7 @@ public class CreateGenreTest
     public async void CreateGenre()
     {
         // Given
-        var categoryRepoMock = _fixture.GetRepositoryCategoryMock();
+        var categoryRepoMock = _fixture.GetRepositoryGenreMock();
         var repositoryMock = _fixture.GetRepositoryMock();
         var unitOfWorkMock = _fixture.GetUnitOfWorkMock();
 
@@ -50,7 +50,7 @@ public class CreateGenreTest
     {
         // Given
         var input = _fixture.GetExampleInputWithCategories();
-        var categoryRepoMock = _fixture.GetRepositoryCategoryMock();
+        var categoryRepoMock = _fixture.GetRepositoryGenreMock();
         categoryRepoMock.Setup(x => x.GetIdsListByIds(It.IsAny<List<Guid>>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(input.Categories!);
         var repositoryMock = _fixture.GetRepositoryMock();
@@ -81,7 +81,7 @@ public class CreateGenreTest
         // Given
         var input = _fixture.GetExampleInputWithCategories();
         var exampleGuid = input.Categories![^1]; // pega o último elemento
-        var categoryRepoMock = _fixture.GetRepositoryCategoryMock();
+        var categoryRepoMock = _fixture.GetRepositoryGenreMock();
         categoryRepoMock.Setup(x => x.GetIdsListByIds(It.IsAny<List<Guid>>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(input.Categories.Except([exampleGuid]).ToList());
         var repositoryMock = _fixture.GetRepositoryMock();
@@ -107,7 +107,7 @@ public class CreateGenreTest
         // Given
         var input = _fixture.GetExampleInput();
         input.Name = invalidName!;
-        var categoryRepoMock = _fixture.GetRepositoryCategoryMock();
+        var categoryRepoMock = _fixture.GetRepositoryGenreMock();
         var repositoryMock = _fixture.GetRepositoryMock();
         var unitOfWorkMock = _fixture.GetUnitOfWorkMock();
 
