@@ -1,3 +1,5 @@
+using System.Collections.Immutable;
+using System.Linq;
 using Application.Exceptions;
 using Domain.Entity;
 using Domain.SeedWork.SearchableRepository;
@@ -172,6 +174,32 @@ public class CategoryRepositoriesTest
             outputItem.IsActive.Should().Be(exampleItem.IsActive);
             outputItem.CreatedAt.Should().Be(exampleItem.CreatedAt);
         }
+    }
+
+    [Fact(DisplayName = nameof(ListByIds))]
+    [Trait("Integration/Infra.Data", "CategoryRepository - Repositories")]
+    public async Task ListByIds()
+    {
+        // Given
+        CodeflixCatalogDbContext dbContext = _fixture.CreateDbContext();
+        var exampleCategoriesList = _fixture.GetExampleCategoriesList(15);
+        await dbContext.AddRangeAsync(exampleCategoriesList);
+        await dbContext.SaveChangesAsync(CancellationToken.None);
+        var categoryRepository = new CategoryRepository(dbContext);
+        var random = new Random();
+        var idsToRetrieve = Enumerable.Range(1, 5).Select(_ =>
+        {
+            var index = random.Next(0, exampleCategoriesList.Count - 1);
+            return exampleCategoriesList[index].Id;
+        }).Distinct().ToList();
+
+        // When
+        var output = await categoryRepository.GetListByIds(idsToRetrieve, CancellationToken.None);
+
+        // Then        
+        output.Should().NotBeNull();
+        output.Should().HaveCount(idsToRetrieve.Count);
+        output.Select(c => c.Id).Should().BeEquivalentTo(idsToRetrieve);
     }
 
     [Fact(DisplayName = nameof(SearchReturnsEmptyWhenPersistenceIsEmpty))]

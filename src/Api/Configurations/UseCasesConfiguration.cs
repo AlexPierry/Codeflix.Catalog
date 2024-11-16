@@ -18,6 +18,7 @@ public static class UseCasesConfiguration
     private static IServiceCollection AddRepositories(this IServiceCollection services)
     {
         services.AddTransient<ICategoryRepository, CategoryRepository>();
+        services.AddTransient<IGenreRepository, GenreRepository>();
         services.AddTransient<IUnitOfWork, UnitOfWork>();
         return services;
     }

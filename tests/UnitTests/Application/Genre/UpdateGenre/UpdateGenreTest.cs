@@ -22,7 +22,7 @@ public class UpdateGenreTest
     public async void UpdateGenre()
     {
         // Given
-        var categoryRepoMock = _fixture.GetRepositoryGenreMock();
+        var categoryRepoMock = _fixture.GetCategoryRepositoryMock();
         var repositoryMock = _fixture.GetRepositoryMock();
         var unitOfWorkMock = _fixture.GetUnitOfWorkMock();
         var exampleGenre = _fixture.GetExampleGenre();
@@ -54,7 +54,7 @@ public class UpdateGenreTest
     public async void ThrowsWhenNotFound()
     {
         // Given
-        var categoryRepoMock = _fixture.GetRepositoryGenreMock();
+        var categoryRepoMock = _fixture.GetCategoryRepositoryMock();
         var repositoryMock = _fixture.GetRepositoryMock();
         var unitOfWorkMock = _fixture.GetUnitOfWorkMock();
         var exampleId = Guid.NewGuid();
@@ -80,7 +80,7 @@ public class UpdateGenreTest
     public async void ThrowsWhenNameIsInvalid(string? invalidName)
     {
         // Given
-        var categoryRepoMock = _fixture.GetRepositoryGenreMock();
+        var categoryRepoMock = _fixture.GetCategoryRepositoryMock();
         var repositoryMock = _fixture.GetRepositoryMock();
         var unitOfWorkMock = _fixture.GetUnitOfWorkMock();
         var exampleGenre = _fixture.GetExampleGenre();
@@ -107,7 +107,7 @@ public class UpdateGenreTest
     public async void UpdateGenreOnlyName(bool? isActive)
     {
         // Given
-        var categoryRepoMock = _fixture.GetRepositoryGenreMock();
+        var categoryRepoMock = _fixture.GetCategoryRepositoryMock();
         var repositoryMock = _fixture.GetRepositoryMock();
         var unitOfWorkMock = _fixture.GetUnitOfWorkMock();
         var exampleGenre = _fixture.GetExampleGenre(isActive);
@@ -140,7 +140,7 @@ public class UpdateGenreTest
     public async void UpdateGenreAddingCategoriesIds()
     {
         // Given
-        var categoryRepoMock = _fixture.GetRepositoryGenreMock();
+        var categoryRepoMock = _fixture.GetCategoryRepositoryMock();
         var repositoryMock = _fixture.GetRepositoryMock();
         var unitOfWorkMock = _fixture.GetUnitOfWorkMock();
         var exampleGenre = _fixture.GetExampleGenre();
@@ -175,7 +175,7 @@ public class UpdateGenreTest
     public async void UpdateGenreReplacingCategoriesIds()
     {
         // Given
-        var categoryRepoMock = _fixture.GetRepositoryGenreMock();
+        var categoryRepoMock = _fixture.GetCategoryRepositoryMock();
         var repositoryMock = _fixture.GetRepositoryMock();
         var unitOfWorkMock = _fixture.GetUnitOfWorkMock();
         var exampleGenre = _fixture.GetExampleGenre(null, Enumerable.Range(1, 5).Select(_ => Guid.NewGuid()).ToList());
@@ -201,7 +201,7 @@ public class UpdateGenreTest
         output.Id.Should().Be(exampleGenre.Id);
         output.Name.Should().Be(exampleGenre.Name);
         output.Catetories.Should().HaveCount(input.Categories!.Count());
-        output.Catetories.Except(input.Categories!).Should().HaveCount(0);
+        output.Catetories.Select(relation => relation.Id).Except(input.Categories!).Should().HaveCount(0);
         output.IsActive.Should().Be(exampleGenre.IsActive);
         output.CreatedAt.Should().BeSameDateAs(exampleGenre.CreatedAt);
     }
@@ -211,7 +211,7 @@ public class UpdateGenreTest
     public async void ThrowsWhenCategoryDoesNotExist()
     {
         // Given
-        var categoryRepoMock = _fixture.GetRepositoryGenreMock();
+        var categoryRepoMock = _fixture.GetCategoryRepositoryMock();
         var repositoryMock = _fixture.GetRepositoryMock();
         var unitOfWorkMock = _fixture.GetUnitOfWorkMock();
         var exampleGenre = _fixture.GetExampleGenre(null, Enumerable.Range(1, 5).Select(_ => Guid.NewGuid()).ToList());
@@ -239,7 +239,7 @@ public class UpdateGenreTest
     public async void UpdateGenreWithoutCategoriesIds()
     {
         // Given
-        var categoryRepoMock = _fixture.GetRepositoryGenreMock();
+        var categoryRepoMock = _fixture.GetCategoryRepositoryMock();
         var repositoryMock = _fixture.GetRepositoryMock();
         var unitOfWorkMock = _fixture.GetUnitOfWorkMock();
         var exampleGenre = _fixture.GetExampleGenre(null, Enumerable.Range(1, 5).Select(_ => Guid.NewGuid()).ToList());
@@ -265,7 +265,7 @@ public class UpdateGenreTest
         output.Id.Should().Be(exampleGenre.Id);
         output.Name.Should().Be(input.Name);
         output.Catetories.Should().HaveCount(exampleGenre.Categories.Count());
-        output.Catetories.Except(exampleGenre.Categories!).Should().HaveCount(0);
+        output.Catetories.Select(relation => relation.Id).Except(exampleGenre.Categories!).Should().HaveCount(0);
         output.IsActive.Should().Be((bool)input.IsActive!);
         output.CreatedAt.Should().BeSameDateAs(exampleGenre.CreatedAt);
     }
@@ -275,7 +275,7 @@ public class UpdateGenreTest
     public async void UpdateGenreWithEmptyCategoriesIds()
     {
         // Given
-        var categoryRepoMock = _fixture.GetRepositoryGenreMock();
+        var categoryRepoMock = _fixture.GetCategoryRepositoryMock();
         var repositoryMock = _fixture.GetRepositoryMock();
         var unitOfWorkMock = _fixture.GetUnitOfWorkMock();
         var exampleGenre = _fixture.GetExampleGenre(null, Enumerable.Range(1, 5).Select(_ => Guid.NewGuid()).ToList());

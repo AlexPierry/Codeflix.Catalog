@@ -39,7 +39,7 @@ public class GetGenreTest
         output.Id.Should().Be(exampleGenre.Id);
         output.Name.Should().Be(exampleGenre.Name);
         output.Catetories.Should().HaveCount(exampleGenre.Categories.Count());
-        output.Catetories.Except(exampleGenre.Categories!).Should().HaveCount(0);
+        output.Catetories.Select(relation => relation.Id).Except(exampleGenre.Categories!).Should().HaveCount(0);
         output.IsActive.Should().Be(exampleGenre.IsActive);
         output.CreatedAt.Should().BeSameDateAs(exampleGenre.CreatedAt);
     }

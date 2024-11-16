@@ -8,9 +8,10 @@ namespace UnitTests.Application.Genre.Common;
 public class GenreUseCasesBaseFixture : BaseFixture
 {
     public Mock<IGenreRepository> GetRepositoryMock() => new();
+
     public Mock<IUnitOfWork> GetUnitOfWorkMock() => new();
 
-    public Mock<ICategoryRepository> GetRepositoryGenreMock() => new();
+    public Mock<ICategoryRepository> GetCategoryRepositoryMock() => new();
 
     public string GetValidGenreName()
     {

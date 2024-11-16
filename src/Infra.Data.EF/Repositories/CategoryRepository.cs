@@ -10,6 +10,7 @@ public class CategoryRepository : ICategoryRepository
 {
 
     private readonly CodeflixCatalogDbContext _context;
+
     private DbSet<Category> _categories => _context.Set<Category>();
 
     public CategoryRepository(CodeflixCatalogDbContext context)
@@ -78,8 +79,18 @@ public class CategoryRepository : ICategoryRepository
         return Task.FromResult(_categories.Update(aggregate));
     }
 
-    public Task<IReadOnlyList<Guid>> GetIdsListByIds(List<Guid> ids, CancellationToken cancellationToken)
+    public async Task<IReadOnlyList<Guid>> GetIdsListByIds(List<Guid> ids, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        return await _categories.AsNoTracking()
+            .Where(category => ids.Contains(category.Id))
+            .Select(category => category.Id)
+            .ToListAsync();
+    }
+
+    public async Task<IReadOnlyList<Category>> GetListByIds(List<Guid> ids, CancellationToken cancellationToken)
+    {
+        return await _categories.AsNoTracking()
+            .Where(category => ids.Contains(category.Id))
+            .ToListAsync();
     }
 }

@@ -1,5 +1,6 @@
 using Application.Common;
 using Application.UseCases.Genre.Common;
+using Domain.Entity;
 using Domain.SeedWork.SearchableRepository;
 using MediatR;
 using Entities = Domain.Entity;
@@ -24,5 +25,16 @@ public class ListGenresOutput : PaginatedListOutput<GenreModelOutput>, IRequest<
                 .Select(GenreModelOutput.FromGenre)
                 .ToList()
         );
+    }
+
+    public void FillWithCategoryNames(IReadOnlyList<Entities.Category> relatedCategories)
+    {
+        foreach (var item in Items)
+        {
+            foreach (var category in item.Catetories)
+            {
+                category.Name = relatedCategories?.FirstOrDefault(c => c.Id == category.Id)?.Name;
+            }
+        }
     }
 }
