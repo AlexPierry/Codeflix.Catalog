@@ -1,28 +1,27 @@
 using Domain.SeedWork.SearchableRepository;
-using EndToEndTests.Api.Category.Common;
+using EndToEndTests.Api.Genre.Common;
 using Entities = Domain.Entity;
 
-namespace EndToEndTests.Api.Category;
+namespace EndToEndTests.Api.Genre;
 
-[CollectionDefinition(nameof(ListCategoriesApiTestFixture))]
-public class ListCategoriesApiTestFixtureCollection : ICollectionFixture<ListCategoriesApiTestFixture> { }
+[CollectionDefinition(nameof(ListGenresApiTestFixture))]
+public class ListGenresApiTestFixtureCollection : ICollectionFixture<ListGenresApiTestFixture> { }
 
-public class ListCategoriesApiTestFixture : CategoryBaseFixture
+public class ListGenresApiTestFixture : GenreBaseFixture
 {
-
-    public List<Entities.Category> GetExampleCategoriesListWithNames(List<string> names)
+    public List<Entities.Genre> GetExampleGenresListWithNames(List<string> names)
     {
         return names.Select(name =>
         {
-            var category = GetExampleCategory();
-            category.Update(name);
-            return category;
+            var genre = GetExampleGenre();
+            genre.Update(name);
+            return genre;
         }).ToList();
     }
 
-    public List<Entities.Category> CloneCategoryListOrdered(List<Entities.Category> categories, string orderBy, SearchOrder order)
+    public List<Entities.Genre> CloneGenreListOrdered(List<Entities.Genre> genres, string orderBy, SearchOrder order)
     {
-        var listClone = new List<Entities.Category>(categories);
+        var listClone = new List<Entities.Genre>(genres);
         var orderedEnumarable = (orderBy.ToLower(), order) switch
         {
             ("name", SearchOrder.Asc) => listClone.OrderBy(x => x.Name),
@@ -36,5 +35,4 @@ public class ListCategoriesApiTestFixture : CategoryBaseFixture
 
         return orderedEnumarable.ThenBy(x => x.CreatedAt).ToList();
     }
-
 }

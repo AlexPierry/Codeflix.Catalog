@@ -1,6 +1,6 @@
 using EndToEndTests.Api.Category.Common;
 
-namespace EndToEndTests.Api.Category.DeleteCategory;
+namespace EndToEndTests.Api.Category;
 
 [CollectionDefinition(nameof(DeleteCategoryApiTestFixture))]
 public class DeleteCategoryApiTestFixtureCollection : ICollectionFixture<DeleteCategoryApiTestFixture>

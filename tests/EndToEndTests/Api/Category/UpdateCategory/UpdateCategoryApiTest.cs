@@ -7,7 +7,7 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace EndToEndTests.Api.Category.UpdateCategory;
+namespace EndToEndTests.Api.Category;
 
 [Collection(nameof(UpdateCategoryApiTestFixture))]
 public class UpdateCategoryApiTest : IDisposable

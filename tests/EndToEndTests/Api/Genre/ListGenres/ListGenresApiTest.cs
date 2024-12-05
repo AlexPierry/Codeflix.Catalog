@@ -1,19 +1,20 @@
 using System.Net;
 using Api.Models.Response;
-using Application.UseCases.Category.Common;
-using Application.UseCases.Category.ListCategories;
+using Application.UseCases.Genre.Common;
+using Application.UseCases.Genre.ListGenres;
 using Domain.SeedWork.SearchableRepository;
 using EndToEndTests.Models;
 using FluentAssertions;
+using Infra.Data.EF.Models;
 
-namespace EndToEndTests.Api.Category;
+namespace EndToEndTests.Api.Genre;
 
-[Collection(nameof(ListCategoriesApiTestFixture))]
-public class ListCategoriesApiTest : IDisposable
+[Collection(nameof(ListGenresApiTestFixture))]
+public class ListGenresApiTest : IDisposable
 {
-    private readonly ListCategoriesApiTestFixture _fixture;
+    private readonly ListGenresApiTestFixture _fixture;
 
-    public ListCategoriesApiTest(ListCategoriesApiTestFixture fixture)
+    public ListGenresApiTest(ListGenresApiTestFixture fixture)
     {
         _fixture = fixture;
     }
@@ -23,17 +24,17 @@ public class ListCategoriesApiTest : IDisposable
         _fixture.CleanPercistence();
     }
 
-    [Fact(DisplayName = nameof(ListCategoriesAndTotalDefault))]
-    [Trait("EndToEnd/API", "Category/List - Endpoints")]
-    public async Task ListCategoriesAndTotalDefault()
+    [Fact(DisplayName = nameof(ListGenresAndTotal))]
+    [Trait("EndToEnd/API", "Genre/List - Endpoints")]
+    public async Task ListGenresAndTotal()
     {
         // Given
         var defaultPageSize = 15;
-        var exampleCategoryList = _fixture.GetExampleCategoriesList(20);
-        await _fixture.Persistence.InsertList(exampleCategoryList);
+        var exampleGenreList = _fixture.GetExampleGenresList(20);
+        await _fixture.Persistence.InsertList(exampleGenreList);
 
         // When
-        var (response, output) = await _fixture.ApiClient.Get<TestApiResponseList<CategoryModelOutput>>("/categories");
+        var (response, output) = await _fixture.ApiClient.Get<TestApiResponseList<GenreModelOutput>>("/genres");
 
         // Then
         response.Should().NotBeNull();
@@ -41,29 +42,29 @@ public class ListCategoriesApiTest : IDisposable
         output.Should().NotBeNull();
         output!.Meta.Should().NotBeNull();
         output.Data.Should().NotBeNull();
-        output.Meta!.Total.Should().Be(exampleCategoryList.Count);
+        output.Meta!.Total.Should().Be(exampleGenreList.Count);
         output.Meta.CurrentPage.Should().Be(1);
         output.Meta.PerPage.Should().Be(defaultPageSize);
         output.Data.Should().HaveCount(defaultPageSize);
         foreach (var item in output.Data!)
         {
-            var exampleItem = exampleCategoryList.FirstOrDefault(i => i.Id == item.Id);
+            var exampleItem = exampleGenreList.FirstOrDefault(i => i.Id == item.Id);
             exampleItem.Should().NotBeNull();
             exampleItem!.Name.Should().Be(item.Name);
-            exampleItem.Description.Should().Be(item.Description);
             exampleItem.IsActive.Should().Be(item.IsActive);
             exampleItem.CreatedAt.Should().BeSameDateAs(item.CreatedAt);
+            exampleItem.Categories.Should().HaveCount(0);
         }
     }
 
     [Fact(DisplayName = nameof(NoItemsWhenPersistenceIsEmpty))]
-    [Trait("EndToEnd/API", "Category/List - Endpoints")]
+    [Trait("EndToEnd/API", "Genre/List - Endpoints")]
     public async Task NoItemsWhenPersistenceIsEmpty()
     {
         // Given
 
         // When
-        var (response, output) = await _fixture.ApiClient.Get<TestApiResponseList<CategoryModelOutput>>("/categories");
+        var (response, output) = await _fixture.ApiClient.Get<TestApiResponseList<GenreModelOutput>>("/genres");
 
         // Then
         response.Should().NotBeNull();
@@ -75,17 +76,38 @@ public class ListCategoriesApiTest : IDisposable
         output.Data.Should().HaveCount(0);
     }
 
-    [Fact(DisplayName = nameof(ListCategoriesAndTotal))]
-    [Trait("EndToEnd/API", "Category/List - Endpoints")]
-    public async Task ListCategoriesAndTotal()
+    [Fact(DisplayName = nameof(ListGenresWithRelations))]
+    [Trait("EndToEnd/API", "GetGenre - Endpoints")]
+    public async Task ListGenresWithRelations()
     {
         // Given
-        var exampleCategoryList = _fixture.GetExampleCategoriesList(20);
-        await _fixture.Persistence.InsertList(exampleCategoryList);
-        var input = new ListCategoriesInput(page: 1, perPage: 5);
+        var defaultPageSize = 15;
+        var exampleGenres = _fixture.GetExampleGenresList(20);
+        await _fixture.Persistence.InsertList(exampleGenres);
+        var exampleCategories = _fixture.GetExampleCategoriesList(15);
+        await _fixture.CategoryPersistence.InsertList(exampleCategories);
+        var genresCategoriesList = new List<GenresCategories>();
+        exampleGenres.ForEach(genre =>
+        {
+            var random = new Random();
+            var startPoint = random.Next(0, exampleCategories.Count);
+            var itemsToTake = random.Next(0, 4);
+            for (int i = startPoint; i < exampleCategories.Count; i++)
+            {
+                if (itemsToTake > 0)
+                {
+                    var categoryId = exampleCategories[i].Id;
+                    genre.AddCategory(categoryId);
+                    itemsToTake--;
+                    genresCategoriesList.Add(new GenresCategories(categoryId, genre.Id));
+                }
+            }
+        });
+
+        await _fixture.GenresCategoriesPersistence.InsertList(genresCategoriesList);
 
         // When
-        var (response, output) = await _fixture.ApiClient.Get<TestApiResponseList<CategoryModelOutput>>("/categories", input);
+        var (response, output) = await _fixture.ApiClient.Get<TestApiResponseList<GenreModelOutput>>($"/genres");
 
         // Then
         response.Should().NotBeNull();
@@ -93,36 +115,42 @@ public class ListCategoriesApiTest : IDisposable
         output.Should().NotBeNull();
         output!.Meta.Should().NotBeNull();
         output.Data.Should().NotBeNull();
-        output.Meta!.Total.Should().Be(exampleCategoryList.Count);
-        output.Meta.CurrentPage.Should().Be(input.Page);
-        output.Meta.PerPage.Should().Be(input.PerPage);
-        output.Data.Should().HaveCount(input.PerPage);
+        output.Meta!.Total.Should().Be(exampleGenres.Count);
+        output.Meta.CurrentPage.Should().Be(1);
+        output.Meta.PerPage.Should().Be(defaultPageSize);
+        output.Data.Should().HaveCount(defaultPageSize);
         foreach (var item in output.Data!)
         {
-            var exampleItem = exampleCategoryList.FirstOrDefault(i => i.Id == item.Id);
+            var exampleItem = exampleGenres.FirstOrDefault(i => i.Id == item.Id);
             exampleItem.Should().NotBeNull();
             exampleItem!.Name.Should().Be(item.Name);
-            exampleItem.Description.Should().Be(item.Description);
             exampleItem.IsActive.Should().Be(item.IsActive);
             exampleItem.CreatedAt.Should().BeSameDateAs(item.CreatedAt);
+            exampleItem.Categories.Should().HaveCount(item.Catetories.Count);
+            item.Catetories.Select(c => c.Id).ToList().Should().BeEquivalentTo(exampleItem.Categories);
+            item.Catetories.ToList().ForEach(category =>
+            {
+                var exampleCategory = exampleCategories.FirstOrDefault(c => c.Id == category.Id);
+                category.Name.Should().Be(exampleCategory!.Name);
+            });
         }
     }
 
     [Theory(DisplayName = nameof(ListPaginated))]
-    [Trait("EndToEnd/API", "Category/List - Endpoints")]
+    [Trait("EndToEnd/API", "Genre/List - Endpoints")]
     [InlineData(10, 1, 5, 5)]
     [InlineData(10, 2, 5, 5)]
     [InlineData(7, 2, 5, 2)]
     [InlineData(7, 3, 5, 0)]
-    public async Task ListPaginated(int numberOfCategoriesToGenerate, int page, int perPage, int expectedNumberOfItems)
+    public async Task ListPaginated(int numberOfGenresToGenerate, int page, int perPage, int expectedNumberOfItems)
     {
         // Given
-        var exampleCategoryList = _fixture.GetExampleCategoriesList(numberOfCategoriesToGenerate);
-        await _fixture.Persistence.InsertList(exampleCategoryList);
-        var input = new ListCategoriesInput(page, perPage);
+        var exampleGenreList = _fixture.GetExampleGenresList(numberOfGenresToGenerate);
+        await _fixture.Persistence.InsertList(exampleGenreList);
+        var input = new ListGenresInput(page, perPage);
 
         // When
-        var (response, output) = await _fixture.ApiClient.Get<TestApiResponseList<CategoryModelOutput>>("/categories", input);
+        var (response, output) = await _fixture.ApiClient.Get<TestApiResponseList<GenreModelOutput>>("/genres", input);
 
         // Then        
         response.Should().NotBeNull();
@@ -130,23 +158,22 @@ public class ListCategoriesApiTest : IDisposable
         output.Should().NotBeNull();
         output!.Meta.Should().NotBeNull();
         output.Data.Should().NotBeNull();
-        output.Meta!.Total.Should().Be(numberOfCategoriesToGenerate);
+        output.Meta!.Total.Should().Be(numberOfGenresToGenerate);
         output.Meta.CurrentPage.Should().Be(input.Page);
         output.Meta.PerPage.Should().Be(input.PerPage);
         output.Data.Should().HaveCount(expectedNumberOfItems);
         foreach (var item in output.Data!)
         {
-            var exampleItem = exampleCategoryList.FirstOrDefault(i => i.Id == item.Id);
+            var exampleItem = exampleGenreList.FirstOrDefault(i => i.Id == item.Id);
             exampleItem.Should().NotBeNull();
             exampleItem!.Name.Should().Be(item.Name);
-            exampleItem.Description.Should().Be(item.Description);
             exampleItem.IsActive.Should().Be(item.IsActive);
             exampleItem.CreatedAt.Should().BeSameDateAs(item.CreatedAt);
         }
     }
 
     [Theory(DisplayName = nameof(SearchByText))]
-    [Trait("EndToEnd/API", "Category/List - Endpoints")]
+    [Trait("EndToEnd/API", "Genre/List - Endpoints")]
     [InlineData("Action", 1, 5, 1, 1)]
     [InlineData("Horror", 1, 5, 3, 3)]
     [InlineData("Horror", 2, 5, 0, 3)]
@@ -158,7 +185,7 @@ public class ListCategoriesApiTest : IDisposable
     public async Task SearchByText(string search, int page, int perPage, int expectedNumberOfItems, int expectedTotalItems)
     {
         // Given
-        var exampleCategoryList = _fixture.GetExampleCategoriesListWithNames(new List<string>(){
+        var exampleCategoryList = _fixture.GetExampleGenresListWithNames(new List<string>(){
             "Action",
             "Horror",
             "Horror - Robots",
@@ -171,10 +198,10 @@ public class ListCategoriesApiTest : IDisposable
         });
 
         await _fixture.Persistence.InsertList(exampleCategoryList);
-        var input = new ListCategoriesInput(page, perPage, search);
+        var input = new ListGenresInput(page, perPage, search);
 
         // When
-        var (response, output) = await _fixture.ApiClient.Get<TestApiResponseList<CategoryModelOutput>>("/categories", input);
+        var (response, output) = await _fixture.ApiClient.Get<TestApiResponseList<GenreModelOutput>>("/genres", input);
 
         // Then        
         response.Should().NotBeNull();
@@ -191,14 +218,13 @@ public class ListCategoriesApiTest : IDisposable
             var exampleItem = exampleCategoryList.FirstOrDefault(i => i.Id == item.Id);
             exampleItem.Should().NotBeNull();
             exampleItem!.Name.Should().Be(item.Name);
-            exampleItem.Description.Should().Be(item.Description);
             exampleItem.IsActive.Should().Be(item.IsActive);
             exampleItem.CreatedAt.Should().BeSameDateAs(item.CreatedAt);
         }
     }
 
     [Theory(DisplayName = nameof(SearchOrdered))]
-    [Trait("Integration/Application", "ListCategories - Use Cases")]
+    [Trait("Integration/Application", "Genre/List - Use Cases")]
     [InlineData("name", "asc")]
     [InlineData("name", "desc")]
     [InlineData("id", "asc")]
@@ -209,13 +235,13 @@ public class ListCategoriesApiTest : IDisposable
     public async Task SearchOrdered(string orderBy, string order)
     {
         // Given
-        var exampleCategoryList = _fixture.GetExampleCategoriesList();
-        await _fixture.Persistence.InsertList(exampleCategoryList);
+        var exampleGenreList = _fixture.GetExampleGenresList();
+        await _fixture.Persistence.InsertList(exampleGenreList);
         var searchOrder = order.ToLower() == "asc" ? SearchOrder.Asc : SearchOrder.Desc;
-        var input = new ListCategoriesInput(1, 20, "", orderBy, searchOrder);
+        var input = new ListGenresInput(1, 20, "", orderBy, searchOrder);
 
         // When
-        var (response, output) = await _fixture.ApiClient.Get<TestApiResponseList<CategoryModelOutput>>("/categories", input);
+        var (response, output) = await _fixture.ApiClient.Get<TestApiResponseList<GenreModelOutput>>("/genres", input);
 
         // Then
         response.Should().NotBeNull();
@@ -225,10 +251,10 @@ public class ListCategoriesApiTest : IDisposable
         output.Data.Should().NotBeNull();
         output.Meta!.CurrentPage.Should().Be(input.Page);
         output.Meta.PerPage.Should().Be(input.PerPage);
-        output.Meta.Total.Should().Be(exampleCategoryList.Count);
-        output.Data.Should().HaveCount(exampleCategoryList.Count);
+        output.Meta.Total.Should().Be(exampleGenreList.Count);
+        output.Data.Should().HaveCount(exampleGenreList.Count);
 
-        var expectedOrderedList = _fixture.CloneCategoryListOrdered(exampleCategoryList, orderBy, searchOrder);
+        var expectedOrderedList = _fixture.CloneGenreListOrdered(exampleGenreList, orderBy, searchOrder);
         for (int index = 0; index < expectedOrderedList.Count(); index++)
         {
             var expecetedItem = expectedOrderedList[index];
@@ -237,10 +263,8 @@ public class ListCategoriesApiTest : IDisposable
             outputItem.Should().NotBeNull();
             outputItem!.Id.Should().Be(expecetedItem!.Id);
             outputItem.Name.Should().Be(expecetedItem.Name);
-            outputItem.Description.Should().Be(expecetedItem.Description);
             outputItem.IsActive.Should().Be(expecetedItem.IsActive);
             outputItem.CreatedAt.Should().BeSameDateAs(expecetedItem.CreatedAt);
         }
     }
-
 }

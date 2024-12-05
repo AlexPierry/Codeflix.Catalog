@@ -1,10 +1,9 @@
 using System.Net;
-using Application.UseCases.Category.Common;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace EndToEndTests.Api.Category.DeleteCategory;
+namespace EndToEndTests.Api.Category;
 
 [Collection(nameof(DeleteCategoryApiTestFixture))]
 public class DeleteCategoryApiTest : IDisposable

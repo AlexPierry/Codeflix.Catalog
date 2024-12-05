@@ -1,4 +1,4 @@
-namespace EndToEndTests.Api.Category.CreateCategory;
+namespace EndToEndTests.Api.Category;
 
 public class CreateCategoryApiTestDataGenerator
 {

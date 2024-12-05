@@ -4,7 +4,9 @@ using Application.UseCases.Genre.Common;
 using Application.UseCases.Genre.CreateGenre;
 using Application.UseCases.Genre.DeleteGenre;
 using Application.UseCases.Genre.GetGenre;
+using Application.UseCases.Genre.ListGenres;
 using Application.UseCases.Genre.UpdateGenre;
+using Domain.SeedWork.SearchableRepository;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -59,5 +61,27 @@ public class GenresController : ControllerBase
         var input = new UpdateGenreInput(id, apiInput.Name, apiInput.IsActive, apiInput.Categories);
         var output = await _mediator.Send(input, cancellationToken);
         return Ok(new ApiResponse<GenreModelOutput>(output));
+    }
+
+    [HttpGet]
+    [ProducesResponseType(typeof(GenreModelOutput), StatusCodes.Status200OK)]
+    public async Task<IActionResult> List(
+        CancellationToken cancellationToken,
+        [FromQuery] int? page = null,
+        [FromQuery(Name = "per_page")] int? perPage = null,
+        [FromQuery] string? search = null,
+        [FromQuery] string? sort = null,
+        [FromQuery] SearchOrder? dir = null)
+    {
+        var input = new ListGenresInput();
+        if (page is not null) input.Page = page.Value;
+        if (perPage is not null) input.PerPage = perPage.Value;
+        if (!string.IsNullOrEmpty(search)) input.Search = search;
+        if (!string.IsNullOrEmpty(sort)) input.Sort = sort;
+        if (dir is not null) input.Dir = dir.Value;
+
+        var output = await _mediator.Send(input, cancellationToken);
+
+        return Ok(new ApiResponseList<GenreModelOutput>(output));
     }
 }

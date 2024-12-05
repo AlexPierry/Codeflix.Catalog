@@ -1,7 +1,7 @@
 using Api.Models.Category;
 using EndToEndTests.Api.Category.Common;
 
-namespace EndToEndTests.Api.Category.UpdateCategory;
+namespace EndToEndTests.Api.Category;
 
 [CollectionDefinition(nameof(UpdateCategoryApiTestFixture))]
 public class UpdateCategoryApiTestFixtureCollection : ICollectionFixture<UpdateCategoryApiTestFixture> { }

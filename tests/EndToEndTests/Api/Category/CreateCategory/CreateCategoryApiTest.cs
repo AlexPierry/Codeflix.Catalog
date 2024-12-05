@@ -5,7 +5,7 @@ using Application.UseCases.Category.CreateCategory;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 
-namespace EndToEndTests.Api.Category.CreateCategory;
+namespace EndToEndTests.Api.Category;
 
 [Collection(nameof(CreateCategoryApiTestFixture))]
 public class CreateCategoryApiTest : IDisposable

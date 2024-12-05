@@ -5,7 +5,7 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace EndToEndTests.Api.Category.GetCategory;
+namespace EndToEndTests.Api.Category;
 
 [Collection(nameof(GetCategoryApiTestFixture))]
 public class GetCategoryApiTest : IDisposable

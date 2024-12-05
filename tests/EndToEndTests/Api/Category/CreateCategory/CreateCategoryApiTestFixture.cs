@@ -1,7 +1,7 @@
 using Application.UseCases.Category.CreateCategory;
 using EndToEndTests.Api.Category.Common;
 
-namespace EndToEndTests.Api.Category.CreateCategory;
+namespace EndToEndTests.Api.Category;
 
 [CollectionDefinition(nameof(CreateCategoryApiTestFixture))]
 public class CreateCategoryApiTestFixtureCollection : ICollectionFixture<CreateCategoryApiTestFixture> { }
