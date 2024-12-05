@@ -1,6 +1,4 @@
 using System.Net;
-using Api.Models.Response;
-using Application.UseCases.Genre.Common;
 using FluentAssertions;
 using Infra.Data.EF.Models;
 using Microsoft.AspNetCore.Http;
@@ -8,12 +6,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EndToEndTests.Api.Genre;
 
-[Collection(nameof(GetGenreApiTestFixture))]
-public class GetGenreApiTest : IDisposable
+[Collection(nameof(DeleteGenreApiTestFixture))]
+public class DeleteGenreApiTest : IDisposable
 {
-    private readonly GetGenreApiTestFixture _fixture;
+    private readonly DeleteGenreApiTestFixture _fixture;
 
-    public GetGenreApiTest(GetGenreApiTestFixture fixture)
+    public DeleteGenreApiTest(DeleteGenreApiTestFixture fixture)
     {
         _fixture = fixture;
     }
@@ -23,9 +21,9 @@ public class GetGenreApiTest : IDisposable
         _fixture.CleanPercistence();
     }
 
-    [Fact(DisplayName = nameof(GetGenreOk))]
-    [Trait("EndToEnd/API", "GetGenre - Endpoints")]
-    public async Task GetGenreOk()
+    [Fact(DisplayName = nameof(DeleteGenreOk))]
+    [Trait("EndToEnd/API", "DeleteGenre - Endpoints")]
+    public async Task DeleteGenreOk()
     {
         // Given
         var exampleGenreList = _fixture.GetExampleGenresList(10);
@@ -33,42 +31,40 @@ public class GetGenreApiTest : IDisposable
         var exampleGenre = exampleGenreList[5];
 
         // When
-        var (response, output) = await _fixture.ApiClient.Get<ApiResponse<GenreModelOutput>>($"/genres/{exampleGenre.Id}");
+        var (response, output) = await _fixture.ApiClient.Delete<object>($"/genres/{exampleGenre.Id}");
 
         // Then
-        response!.StatusCode.Should().Be(HttpStatusCode.OK);
-        output.Should().NotBeNull();
-        output!.Data.Should().NotBeNull();
-        output.Data.Id.Should().Be(exampleGenre.Id);
-        output.Data.Name.Should().Be(exampleGenre.Name);
-        output.Data.IsActive.Should().Be(exampleGenre.IsActive);
-        output.Data.CreatedAt.Should().BeSameDateAs(exampleGenre.CreatedAt);
+        response.Should().NotBeNull();
+        response!.StatusCode.Should().Be(HttpStatusCode.NoContent);
+        output.Should().BeNull();
+        var percistenceGenre = await _fixture.Persistence.GetById(exampleGenre.Id);
+        percistenceGenre.Should().BeNull();
     }
 
-    [Fact(DisplayName = nameof(NotFound))]
-    [Trait("EndToEnd/API", "GetGenre - Endpoints")]
-    public async Task NotFound()
+    [Fact(DisplayName = nameof(NotFoundWhenGenreDoesNotExist))]
+    [Trait("EndToEnd/API", "DeleteGenre - Endpoints")]
+    public async Task NotFoundWhenGenreDoesNotExist()
     {
         // Given
         var exampleGenreList = _fixture.GetExampleGenresList(10);
         await _fixture.Persistence.InsertList(exampleGenreList);
-        var exampleGenre = Guid.NewGuid();
+        var exampleGenreId = Guid.NewGuid();
 
         // When
-        var (response, output) = await _fixture.ApiClient.Get<ProblemDetails>($"/genres/{exampleGenre}");
+        var (response, output) = await _fixture.ApiClient.Delete<ProblemDetails>($"/genres/{exampleGenreId}");
 
         // Then
         response!.StatusCode.Should().Be(HttpStatusCode.NotFound);
         output.Should().NotBeNull();
         output!.Status.Should().Be(StatusCodes.Status404NotFound);
         output.Title.Should().Be("Not Found");
-        output.Detail.Should().Be($"Genre '{exampleGenre}' not found.");
+        output.Detail.Should().Be($"Genre '{exampleGenreId}' not found.");
         output.Type.Should().Be("NotFound");
     }
 
-    [Fact(DisplayName = nameof(GetGenreWithRelations))]
-    [Trait("EndToEnd/API", "GetGenre - Endpoints")]
-    public async Task GetGenreWithRelations()
+    [Fact(DisplayName = nameof(DeleteGenreWithRelations))]
+    [Trait("EndToEnd/API", "DeleteGenre - Endpoints")]
+    public async Task DeleteGenreWithRelations()
     {
         // Given
         var exampleGenres = _fixture.GetExampleGenresList(10);
@@ -97,17 +93,15 @@ public class GetGenreApiTest : IDisposable
         var exampleGenre = exampleGenres[5];
 
         // When
-        var (response, output) = await _fixture.ApiClient.Get<ApiResponse<GenreModelOutput>>($"/genres/{exampleGenre.Id}");
+        var (response, output) = await _fixture.ApiClient.Delete<object>($"/genres/{exampleGenre.Id}");
 
         // Then
-        response!.StatusCode.Should().Be(HttpStatusCode.OK);
-        output.Should().NotBeNull();
-        output!.Data.Should().NotBeNull();
-        output.Data.Id.Should().Be(exampleGenre.Id);
-        output.Data.Name.Should().Be(exampleGenre.Name);
-        output.Data.IsActive.Should().Be(exampleGenre.IsActive);
-        output.Data.CreatedAt.Should().BeSameDateAs(exampleGenre.CreatedAt);
-        output.Data.Catetories.Should().HaveCount(exampleGenre.Categories.Count);
-        output.Data.Catetories.Select(c => c.Id).Except(exampleGenre.Categories).Should().HaveCount(0);
+        response.Should().NotBeNull();
+        response!.StatusCode.Should().Be(HttpStatusCode.NoContent);
+        output.Should().BeNull();
+        var percistenceGenre = await _fixture.Persistence.GetById(exampleGenre.Id);
+        percistenceGenre.Should().BeNull();
+        var persistenceRelations = await _fixture.GenresCategoriesPersistence.GetByGenreId(exampleGenre.Id);
+        persistenceRelations.Should().HaveCount(0);
     }
 }

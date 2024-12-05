@@ -9,11 +9,14 @@ public class GenreBaseFixture : BaseFixture
     public GenrePersistence Persistence { get; private set; }
     public CategoryPersistence CategoryPersistence { get; private set; }
 
+    public GenresCategoriesPersistence GenresCategoriesPersistence { get; private set; }
+
     public GenreBaseFixture() : base()
     {
         var dbContext = CreateDbContext();
         Persistence = new GenrePersistence(dbContext);
         CategoryPersistence = new CategoryPersistence(dbContext);
+        GenresCategoriesPersistence = new GenresCategoriesPersistence(dbContext);
     }
 
     public string GetValidName()

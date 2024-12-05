@@ -19,6 +19,12 @@ public class GenrePersistence
         return await _context.Genres.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
     }
 
+    public async Task InsertGenre(Entities.Genre genre)
+    {
+        await _context.Genres.AddAsync(genre);
+        await _context.SaveChangesAsync();
+    }
+
     public async Task InsertList(List<Entities.Genre> exampleGenreList)
     {
         await _context.Genres.AddRangeAsync(exampleGenreList);
@@ -28,12 +34,6 @@ public class GenrePersistence
     public async Task InsertList(List<Entities.Category> exampleCategoryList)
     {
         await _context.Categories.AddRangeAsync(exampleCategoryList);
-        await _context.SaveChangesAsync();
-    }
-
-    public async Task InsertGenresCategories(GenresCategories genresCategories)
-    {
-        await _context.GenresCategories.AddAsync(genresCategories);
         await _context.SaveChangesAsync();
     }
 }
