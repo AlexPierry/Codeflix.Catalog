@@ -18,7 +18,7 @@ public class UpdateGenreTest
     }
 
     [Fact(DisplayName = nameof(UpdateGenreOk))]
-    [Trait("Integration/Application", "GetGenre - Use Cases")]
+    [Trait("Integration/Application", "UpdateGenre - Use Cases")]
     public async Task UpdateGenreOk()
     {
         //Given
@@ -60,7 +60,7 @@ public class UpdateGenreTest
     }
 
     [Fact(DisplayName = nameof(UpdateGenreWithRelations))]
-    [Trait("Integration/Application", "GetGenre - Use Cases")]
+    [Trait("Integration/Application", "UpdateGenre - Use Cases")]
     public async Task UpdateGenreWithRelations()
     {
         //Given
@@ -114,7 +114,7 @@ public class UpdateGenreTest
     }
 
     [Fact(DisplayName = nameof(ThrowsExceptionWhenCategoryDoesNotExist))]
-    [Trait("Integration/Application", "GetGenre - Use Cases")]
+    [Trait("Integration/Application", "UpdateGenre - Use Cases")]
     public async Task ThrowsExceptionWhenCategoryDoesNotExist()
     {
         //Given
@@ -153,7 +153,7 @@ public class UpdateGenreTest
     }
 
     [Fact(DisplayName = nameof(ThrowsExceptionWhenGenreIdDoesNotExist))]
-    [Trait("Integration/Application", "GetGenre - Use Cases")]
+    [Trait("Integration/Application", "UpdateGenre - Use Cases")]
     public async Task ThrowsExceptionWhenGenreIdDoesNotExist()
     {
         //Given
@@ -181,7 +181,7 @@ public class UpdateGenreTest
     }
 
     [Fact(DisplayName = nameof(UpdateGenreWithoutNewRelations))]
-    [Trait("Integration/Application", "GetGenre - Use Cases")]
+    [Trait("Integration/Application", "UpdateGenre - Use Cases")]
     public async Task UpdateGenreWithoutNewRelations()
     {
         //Given
@@ -233,7 +233,7 @@ public class UpdateGenreTest
     }
 
     [Fact(DisplayName = nameof(UpdateGenreRemovingRelations))]
-    [Trait("Integration/Application", "GetGenre - Use Cases")]
+    [Trait("Integration/Application", "UpdateGenre - Use Cases")]
     public async Task UpdateGenreRemovingRelations()
     {
         //Given

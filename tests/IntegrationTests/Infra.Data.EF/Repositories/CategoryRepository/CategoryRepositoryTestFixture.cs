@@ -68,6 +68,4 @@ public class CategoryRepositoriesTestFixture : BaseFixture
 
         return orderedEnumarable.ToList();
     }
-
-
 }
