@@ -1,4 +1,5 @@
 using Domain.Enum;
+using Entities = Domain.Entity;
 
 namespace UnitTests.Domain.Entity.CastMember;
 
@@ -17,4 +18,8 @@ public class CastMemberTestFixture : BaseFixture
         return (CastMemberType)new Random().Next(1, 2);
     }
 
+    public Entities.CastMember GetValidCastMember()
+    {
+        return new Entities.CastMember(GetValidName(), GetRandomCastMemberType());
+    }
 }

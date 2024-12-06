@@ -14,5 +14,20 @@ public class CastMember : AggregateRoot
         Name = name;
         Type = type;
         CreatedAt = DateTime.Now;
+
+        Validate();
+    }
+
+    public void Update(string newName, CastMemberType newType)
+    {
+        Name = newName;
+        Type = newType;
+
+        Validate();
+    }
+
+    private void Validate()
+    {
+        DomainValidation.NotNullOrEmpty(Name, nameof(Name));
     }
 }

@@ -1,7 +1,5 @@
-
 using Application.Interfaces;
 using Domain.Repository;
-using MediatR;
 
 namespace Application.UseCases.Category.DeleteCategory;
 
