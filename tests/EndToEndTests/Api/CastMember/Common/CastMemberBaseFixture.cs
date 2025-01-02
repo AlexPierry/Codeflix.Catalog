@@ -1,14 +1,23 @@
 using Domain.Enum;
 using Domain.SeedWork.SearchableRepository;
-using IntegrationTest.Base;
+using EndToEndTests.Base;
 using Entities = Domain.Entity;
-namespace IntegrationTest.Application.UseCases.CastMember.Common;
 
-[CollectionDefinition(nameof(CastMemberUseCaseBaseFixture))]
-public class CastMemberUseCaseBaseFixtureCollection : ICollectionFixture<CastMemberUseCaseBaseFixture> { }
+namespace EndToEndTests.Api.CastMember;
 
-public class CastMemberUseCaseBaseFixture : BaseFixture
+[CollectionDefinition(nameof(CastMemberBaseFixture))]
+public class CastMemberBaseFixtureCollection : ICollectionFixture<CastMemberBaseFixture> { }
+
+public class CastMemberBaseFixture : BaseFixture
 {
+    public CastMemberPersistence Persistence { get; private set; }
+
+    public CastMemberBaseFixture() : base()
+    {
+        var dbContext = CreateDbContext();
+        Persistence = new CastMemberPersistence(dbContext);
+    }
+
     public string GetValidName()
     {
         return Faker.Name.FullName();

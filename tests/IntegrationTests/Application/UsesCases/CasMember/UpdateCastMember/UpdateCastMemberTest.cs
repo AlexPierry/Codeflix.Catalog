@@ -1,3 +1,4 @@
+using Application.Exceptions;
 using Application.UseCases.CastMember;
 using FluentAssertions;
 using Infra.Data.EF;
@@ -22,13 +23,13 @@ public class UpdateCastMemberTest
         //Given        
         var exampleCastMembersList = _fixture.GetExampleCastMembersList(5);
         var dbContext = _fixture.CreateDbContext();
-        await dbContext.CastMembers.AddRangeAsync(exampleCastMembersList);        
-        var exampleCastMember = _fixture.GetExampleCastMember();        
-        var trackingInfo = await dbContext.AddAsync(exampleCastMember);        
+        await dbContext.CastMembers.AddRangeAsync(exampleCastMembersList);
         await dbContext.SaveChangesAsync();
-        trackingInfo.State = Microsoft.EntityFrameworkCore.EntityState.Detached;
-        var repository = new CastMemberRepository(dbContext);
-        var unitOfWork = new UnitOfWork(dbContext);
+        var exampleCastMember = exampleCastMembersList[3];
+
+        var actDbContext = _fixture.CreateDbContext(true);
+        var repository = new CastMemberRepository(actDbContext);
+        var unitOfWork = new UnitOfWork(actDbContext);
 
         var useCase = new UpdateCastMember(repository, unitOfWork);
         exampleCastMember.Update(_fixture.GetValidName(), _fixture.GetRandomCastMemberType());
@@ -50,5 +51,27 @@ public class UpdateCastMemberTest
         dbCastMember!.Name.Should().Be(exampleCastMember.Name);
         dbCastMember.Type.Should().Be(exampleCastMember.Type);
         dbCastMember.CreatedAt.Should().BeSameDateAs(exampleCastMember.CreatedAt);
+    }
+
+    [Fact(DisplayName = nameof(UpdateThrowsWhenCastMemberDoesNotExist))]
+    [Trait("Integration/Application", "UpdateCastMember - Use Cases")]
+    public async void UpdateThrowsWhenCastMemberDoesNotExist()
+    {
+        // Given
+        var dbContext = _fixture.CreateDbContext();
+        var repository = new CastMemberRepository(dbContext);
+        var unitOfWork = new UnitOfWork(dbContext);
+        var exampleList = _fixture.GetExampleCastMembersList(10);
+        await dbContext.AddRangeAsync(exampleList);
+        dbContext.SaveChanges();
+
+        var input = new UpdateCastMemberInput(Guid.NewGuid(), _fixture.GetValidName(), _fixture.GetRandomCastMemberType());
+        var useCase = new UpdateCastMember(repository, unitOfWork);
+
+        // When
+        var action = async () => await useCase.Handle(input, CancellationToken.None);
+
+        // Then
+        await action.Should().ThrowAsync<NotFoundException>().WithMessage($"CastMember '{input.Id}' not found.");
     }
 }
