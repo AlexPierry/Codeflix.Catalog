@@ -1,4 +1,5 @@
 using Domain.SeedWork;
+using Domain.Validation;
 
 namespace Domain.Entity;
 

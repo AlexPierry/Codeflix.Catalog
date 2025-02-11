@@ -1,5 +1,7 @@
 using Domain.Exceptions;
 
+namespace Domain.Validation;
+
 public class DomainValidation
 {
     public static void NotNull(object? target, string fieldName)

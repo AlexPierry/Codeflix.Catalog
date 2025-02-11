@@ -1,5 +1,6 @@
 using Bogus;
 using Domain.Exceptions;
+using Domain.Validation;
 using FluentAssertions;
 
 namespace UnitTests.Domain.Validation;
