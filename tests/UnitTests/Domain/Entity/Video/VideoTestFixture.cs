@@ -1,3 +1,4 @@
+using Domain.Entity;
 using Domain.Enum;
 using Entities = Domain.Entity;
 
@@ -56,7 +57,6 @@ public class VideoTestFixture : BaseFixture
         return new Entities.Video(title, description, opened, published, year, duration, rating);
     }
 
-    // Invalid stuff
     internal string GetTooLongTitle()
     {
         return Faker.Lorem.Letter(400);
@@ -75,5 +75,28 @@ public class VideoTestFixture : BaseFixture
     internal MovieRating GetRandomMovieRating()
     {
         return (MovieRating)Faker.Random.Int(0, Enum.GetValues<MovieRating>().Length - 1);
+    }
+
+    internal string GetValidImagePath()
+    {
+        return Faker.Image.PlaceImgUrl();
+    }
+
+    internal string GetValidMediaPath()
+    {
+        var exampleMedias = new string[]{
+            "https://www.youtube.com/file-example.mp4",
+            "https://www.vimeo.com/file-example4.mp4",
+            "https://www.netflix.com/video.mp4",
+            "https://www.primevideo.com/example.mp4",
+            "https://www.disneyplus.com/file.mp4"
+        };
+
+        return exampleMedias[Faker.Random.Int(0, exampleMedias.Length - 1)];
+    }
+
+    internal Media GetValidMedia()
+    {
+        return new Media(GetValidMediaPath());
     }
 }
