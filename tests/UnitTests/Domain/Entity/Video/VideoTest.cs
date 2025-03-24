@@ -72,7 +72,7 @@ public class VideoTest
         // Given
         var invalidVideo = new Entities.Video(
             _fixture.GetTooLongTitle(),
-            _fixture.GetDescriptionTooLong(),
+            _fixture.GetTooLongDescription(),
             _fixture.GetValidOpened(),
             _fixture.GetValidPublished(),
             _fixture.GetValidYear(),
@@ -129,7 +129,7 @@ public class VideoTest
         var validVideo = _fixture.GetValidVideo();
         validVideo.Update(
             _fixture.GetTooLongTitle(),
-            _fixture.GetDescriptionTooLong(),
+            _fixture.GetTooLongDescription(),
             _fixture.GetValidOpened(),
             _fixture.GetValidPublished(),
             _fixture.GetValidYear(),
@@ -338,7 +338,7 @@ public class VideoTest
     public void RemoveAllCategories()
     {
         // Given
-        var validVideo = _fixture.GetValidVideo();        
+        var validVideo = _fixture.GetValidVideo();
         validVideo.AddCategory(Guid.NewGuid());
         validVideo.AddCategory(Guid.NewGuid());
         validVideo.AddCategory(Guid.NewGuid());
@@ -390,7 +390,7 @@ public class VideoTest
     public void RemoveAllGenres()
     {
         // Given
-        var validVideo = _fixture.GetValidVideo();        
+        var validVideo = _fixture.GetValidVideo();
         validVideo.AddGenre(Guid.NewGuid());
         validVideo.AddGenre(Guid.NewGuid());
         validVideo.AddGenre(Guid.NewGuid());
@@ -442,7 +442,7 @@ public class VideoTest
     public void RemoveAllCastMembers()
     {
         // Given
-        var validVideo = _fixture.GetValidVideo();        
+        var validVideo = _fixture.GetValidVideo();
         validVideo.AddCastMember(Guid.NewGuid());
         validVideo.AddCastMember(Guid.NewGuid());
         validVideo.AddCastMember(Guid.NewGuid());

@@ -93,7 +93,7 @@ public class VideoValidatorTest
         // Given
         var invalidVideo = new Entities.Video(
             _fixture.GetValidTitle(),
-            _fixture.GetDescriptionTooLong(),
+            _fixture.GetTooLongDescription(),
             _fixture.GetValidOpened(),
             _fixture.GetValidPublished(),
             _fixture.GetValidYear(),
