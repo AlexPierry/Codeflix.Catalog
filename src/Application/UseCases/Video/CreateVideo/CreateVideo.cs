@@ -1,3 +1,4 @@
+using Application.Exceptions;
 using Application.Interfaces;
 using Domain.Exceptions;
 using Domain.Repository;
@@ -9,12 +10,14 @@ namespace Application.UseCases.Video.CreateVideo;
 
 public class CreateVideo : ICreateVideo
 {
+    private readonly ICategoryRepository _categoryRepository;
     private readonly IVideoRepository _videoRepository;
     private readonly IUnitOfWork _unitOfWork;
 
-    public CreateVideo(IVideoRepository videoRepository, IUnitOfWork unitOfWork)
+    public CreateVideo(IVideoRepository videoRepository, ICategoryRepository categoryRepository, IUnitOfWork unitOfWork)
     {
         _videoRepository = videoRepository;
+        _categoryRepository = categoryRepository;
         _unitOfWork = unitOfWork;
     }
 
@@ -35,6 +38,22 @@ public class CreateVideo : ICreateVideo
         if (validationHandler.HasErrors())
         {
             throw new EntityValidationException("There are validation errors", validationHandler.Errors());
+        }
+
+        if (input.CategoriesIds != null)
+        {
+            var persistedCategories = await _categoryRepository.GetIdsListByIds(input.CategoriesIds.ToList(), cancellationToken);
+            if (persistedCategories.Count < input.CategoriesIds.Count)
+            {
+                throw new RelatedAggregateException(
+                    $"Related category id (or ids) not found: {string.Join(", ",
+                        input.CategoriesIds.Except(persistedCategories))}");
+            }
+
+            foreach (var categoryId in input.CategoriesIds)
+            {
+                video.AddCategory(categoryId);
+            }
         }
 
         await _videoRepository.Insert(video, cancellationToken);

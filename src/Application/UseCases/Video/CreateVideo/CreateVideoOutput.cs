@@ -12,7 +12,8 @@ public record CreateVideoOutput(
     MovieRating Rating,
     int YearLaunched,
     bool Opened,
-    DateTime CreatedAt)
+    DateTime CreatedAt,
+    IReadOnlyCollection<Guid>? CategoriesIds = null)
 {
     public static CreateVideoOutput FromVideo(Entities.Video video)
     {
@@ -25,7 +26,8 @@ public record CreateVideoOutput(
             video.MovieRating,
             video.YearLaunched,
             video.Opened,
-            video.CreatedAt
+            video.CreatedAt,
+            video.Categories
         );
     }
 }
