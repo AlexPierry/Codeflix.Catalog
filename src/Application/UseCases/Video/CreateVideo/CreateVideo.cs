@@ -53,12 +53,31 @@ public class CreateVideo : ICreateVideo
 
         await ValidateAndAddRelations(input, video, cancellationToken);
 
-        await UpdateMediaImages(input, video, cancellationToken);
+        try
+        {
+            await UpdateMediaImages(input, video, cancellationToken);
 
-        await _videoRepository.Insert(video, cancellationToken);
-        await _unitOfWork.Commit(cancellationToken);
+            await _videoRepository.Insert(video, cancellationToken);
+            await _unitOfWork.Commit(cancellationToken);
 
-        return CreateVideoOutput.FromVideo(video);
+            return CreateVideoOutput.FromVideo(video);
+
+        }
+        catch (Exception)
+        {
+            await ClearStorage(video, cancellationToken);
+            throw;
+        }
+    }
+
+    private async Task ClearStorage(Entities.Video video, CancellationToken cancellationToken)
+    {
+        if (video.Thumb is not null)
+            await _storageService.Delete(video.Thumb.Path, cancellationToken);
+        if (video.Banner is not null)
+            await _storageService.Delete(video.Banner.Path, cancellationToken);
+        if (video.ThumbHalf is not null)
+            await _storageService.Delete(video.ThumbHalf.Path, cancellationToken);
     }
 
     private async Task UpdateMediaImages(CreateVideoInput input, Entities.Video video, CancellationToken cancellationToken)

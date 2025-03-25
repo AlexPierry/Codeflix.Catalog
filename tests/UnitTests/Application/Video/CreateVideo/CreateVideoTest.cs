@@ -6,8 +6,6 @@ using Entities = Domain.Entity;
 using Domain.Exceptions;
 using Application.UseCases.Video.CreateVideo;
 using Application.Exceptions;
-using System.Text;
-using Application.UseCases.Video.Common;
 
 namespace UnitTests.Application.Video;
 
@@ -72,7 +70,7 @@ public class CreateVideoTest
         // Arrange
         var videoRepositoryMock = new Mock<IVideoRepository>();
         var unitOfWorkMock = new Mock<IUnitOfWork>();
-        var storageServiceMock = new Mock<IStorageService>();        
+        var storageServiceMock = new Mock<IStorageService>();
         var expectedThumbName = "thumb.jpg";
         storageServiceMock.Setup(x => x.Upload(It.IsAny<string>(), It.IsAny<Stream>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(expectedThumbName);
@@ -122,7 +120,7 @@ public class CreateVideoTest
         // Arrange
         var videoRepositoryMock = new Mock<IVideoRepository>();
         var unitOfWorkMock = new Mock<IUnitOfWork>();
-        var storageServiceMock = new Mock<IStorageService>();        
+        var storageServiceMock = new Mock<IStorageService>();
         var expectedBannerName = "banner.jpg";
         storageServiceMock.Setup(x => x.Upload(It.IsAny<string>(), It.IsAny<Stream>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(expectedBannerName);
@@ -163,7 +161,7 @@ public class CreateVideoTest
 
         unitOfWorkMock.Verify(x => x.Commit(It.IsAny<CancellationToken>()), Times.Once);
         storageServiceMock.Verify(x => x.Upload(It.IsAny<string>(), It.IsAny<Stream>(), It.IsAny<CancellationToken>()), Times.Once);
-    }    
+    }
 
     [Fact(DisplayName = nameof(CreateVideoWithThumbHalf))]
     [Trait("Application", "CreateVideo - Uses Cases")]
@@ -172,7 +170,7 @@ public class CreateVideoTest
         // Arrange
         var videoRepositoryMock = new Mock<IVideoRepository>();
         var unitOfWorkMock = new Mock<IUnitOfWork>();
-        var storageServiceMock = new Mock<IStorageService>();        
+        var storageServiceMock = new Mock<IStorageService>();
         var expectedThumbHalfName = "thumb_half.jpg";
         storageServiceMock.Setup(x => x.Upload(It.IsAny<string>(), It.IsAny<Stream>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(expectedThumbHalfName);
@@ -213,7 +211,124 @@ public class CreateVideoTest
 
         unitOfWorkMock.Verify(x => x.Commit(It.IsAny<CancellationToken>()), Times.Once);
         storageServiceMock.Verify(x => x.Upload(It.IsAny<string>(), It.IsAny<Stream>(), It.IsAny<CancellationToken>()), Times.Once);
-    }   
+    }
+
+    [Fact(DisplayName = nameof(CreateVideoWithAllImages))]
+    [Trait("Application", "CreateVideo - Uses Cases")]
+    public async Task CreateVideoWithAllImages()
+    {
+        // Arrange
+        var videoRepositoryMock = new Mock<IVideoRepository>();
+        var unitOfWorkMock = new Mock<IUnitOfWork>();
+        var storageServiceMock = new Mock<IStorageService>();
+        var expectedThumbHalfName = "thumb-half.jpg";
+        var expectedThumbName = "banner.jpg";
+        var expectedBannerName = "thumb.jpg";
+        storageServiceMock.Setup(x => x.Upload(It.Is<string>(x => x.EndsWith("thumb-half.jpg")), It.IsAny<Stream>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expectedThumbHalfName);
+        storageServiceMock.Setup(x => x.Upload(It.Is<string>(x => x.EndsWith("thumb.jpg")), It.IsAny<Stream>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expectedThumbName);
+        storageServiceMock.Setup(x => x.Upload(It.Is<string>(x => x.EndsWith("banner.jpg")), It.IsAny<Stream>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expectedBannerName);
+        var useCase = new CreateVideo(
+            videoRepositoryMock.Object,
+            Mock.Of<ICategoryRepository>(),
+            Mock.Of<IGenreRepository>(),
+            Mock.Of<ICastMemberRepository>(),
+            unitOfWorkMock.Object,
+            storageServiceMock.Object
+        );
+        var input = _testFixture.GetCreateVideoInputWithAllImages();
+
+        // Act
+        var output = await useCase.Handle(input, CancellationToken.None);
+
+        // Assert
+        output.Id.Should().NotBeEmpty();
+        output.CreatedAt.Should().BeSameDateAs(DateTime.Now);
+        output.Title.Should().Be(input.Title);
+        output.Description.Should().Be(input.Description);
+        output.Published.Should().Be(input.Published);
+        output.Duration.Should().Be(input.Duration);
+        output.Rating.Should().Be(input.MovieRating);
+        output.YearLaunched.Should().Be(input.YearLaunched);
+        output.Opened.Should().Be(input.Opened);
+        output.Banner.Should().Be(expectedBannerName);
+        output.Thumb.Should().Be(expectedThumbName);
+        output.ThumbHalf.Should().Be(expectedThumbHalfName);
+
+        videoRepositoryMock.Verify(x => x.Insert(It.Is<Entities.Video>(
+            video => video.Title == input.Title &&
+            video.Description == input.Description &&
+            video.Published == input.Published &&
+            video.Duration == input.Duration &&
+            video.MovieRating == input.MovieRating &&
+            video.YearLaunched == input.YearLaunched &&
+            video.Opened == input.Opened),
+            It.IsAny<CancellationToken>()), Times.Once);
+
+        unitOfWorkMock.Verify(x => x.Commit(It.IsAny<CancellationToken>()), Times.Once);
+        storageServiceMock.Verify(x => x.Upload(It.IsAny<string>(), It.IsAny<Stream>(), It.IsAny<CancellationToken>()), Times.Exactly(3));
+    }
+
+    [Fact(DisplayName = nameof(ThrowsExceptionInUploadErrorCases))]
+    [Trait("Application", "CreateVideo - Uses Cases")]
+    public async Task ThrowsExceptionInUploadErrorCases()
+    {
+        // Arrange
+        var storageServiceMock = new Mock<IStorageService>();
+        storageServiceMock.Setup(x => x.Upload(It.IsAny<string>(), It.IsAny<Stream>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new Exception("Something went wrong in upload"));
+        var useCase = new CreateVideo(
+            Mock.Of<IVideoRepository>(),
+            Mock.Of<ICategoryRepository>(),
+            Mock.Of<IGenreRepository>(),
+            Mock.Of<ICastMemberRepository>(),
+            Mock.Of<IUnitOfWork>(),
+            storageServiceMock.Object
+        );
+        var input = _testFixture.GetCreateVideoInputWithAllImages();
+
+        // Act
+        var action = async () => await useCase.Handle(input, CancellationToken.None);
+
+        // Assert
+        await action.Should().ThrowAsync<Exception>()
+            .WithMessage("Something went wrong in upload");
+    }
+
+    [Fact(DisplayName = nameof(ThrowsExceptionAndRollbackUploadInErrorCases))]
+    [Trait("Application", "CreateVideo - Uses Cases")]
+    public async Task ThrowsExceptionAndRollbackUploadInErrorCases()
+    {
+        // Arrange
+        var storageServiceMock = new Mock<IStorageService>();
+        storageServiceMock.Setup(x => x.Upload(It.Is<string>(x => x.EndsWith("banner.jpg")), It.IsAny<Stream>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync("123-banner.jpg");
+        storageServiceMock.Setup(x => x.Upload(It.Is<string>(x => x.EndsWith("thumb.jpg")), It.IsAny<Stream>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync("123-thumb.jpg");
+        storageServiceMock.Setup(x => x.Upload(It.Is<string>(x => x.EndsWith("thumb-half.jpg")), It.IsAny<Stream>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new Exception("Something went wrong in upload"));
+        var useCase = new CreateVideo(
+            Mock.Of<IVideoRepository>(),
+            Mock.Of<ICategoryRepository>(),
+            Mock.Of<IGenreRepository>(),
+            Mock.Of<ICastMemberRepository>(),
+            Mock.Of<IUnitOfWork>(),
+            storageServiceMock.Object
+        );
+        var input = _testFixture.GetCreateVideoInputWithAllImages();
+
+        // Act
+        var action = async () => await useCase.Handle(input, CancellationToken.None);
+
+        // Assert
+        await action.Should().ThrowAsync<Exception>()
+            .WithMessage("Something went wrong in upload");
+
+        storageServiceMock.Verify(x => x.Delete(It.Is<string>(x => x == "123-banner.jpg"), It.IsAny<CancellationToken>()), Times.Once);
+        storageServiceMock.Verify(x => x.Delete(It.Is<string>(x => x == "123-thumb.jpg"), It.IsAny<CancellationToken>()), Times.Once);
+    }
 
     [Theory(DisplayName = nameof(CreateVideoThrowsWithInvalidInput))]
     [Trait("Application", "CreateVideo - Uses Cases")]

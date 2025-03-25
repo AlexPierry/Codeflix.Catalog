@@ -38,4 +38,24 @@ public class CreateVideoTestFixture : VideoTestFixtureBase
             thumbHalf
         );
     }
+
+    public CreateVideoInput GetCreateVideoInputWithAllImages()
+    {
+        return new CreateVideoInput
+        (
+            GetValidTitle(),
+            GetValidDescription(),
+            GetValidYear(),
+            GetValidOpened(),
+            GetValidPublished(),
+            GetValidDuration(),
+            GetRandomMovieRating(),
+            null,
+            null,
+            null,
+            GetValidImageFileInput(),
+            GetValidImageFileInput(),
+            GetValidImageFileInput()
+        );
+    }
 }
