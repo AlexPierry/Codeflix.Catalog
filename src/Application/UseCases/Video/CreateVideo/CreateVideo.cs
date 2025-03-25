@@ -1,3 +1,4 @@
+using Application.Common;
 using Application.Exceptions;
 using Application.Interfaces;
 using Domain.Exceptions;
@@ -55,7 +56,9 @@ public class CreateVideo : ICreateVideo
 
         try
         {
-            await UpdateMediaImages(input, video, cancellationToken);
+            await UpdateImages(input, video, cancellationToken);
+
+            await UploadVideos(input, video, cancellationToken);
 
             await _videoRepository.Insert(video, cancellationToken);
             await _unitOfWork.Commit(cancellationToken);
@@ -70,6 +73,23 @@ public class CreateVideo : ICreateVideo
         }
     }
 
+    private async Task UploadVideos(CreateVideoInput input, Entities.Video video, CancellationToken cancellationToken)
+    {
+        if (input.Media is not null)
+        {
+            var fileName = StorageFileName.Create(video.Id, nameof(video.Media), input.Media.Extension);
+            var mediaPath = await _storageService.Upload(fileName, input.Media.FileStream, cancellationToken);
+            video.UpdateMedia(mediaPath);
+        }
+
+        if (input.Trailer is not null)
+        {
+            var fileName = StorageFileName.Create(video.Id, nameof(video.Trailer), input.Trailer.Extension);
+            var trailerPath = await _storageService.Upload(fileName, input.Trailer.FileStream, cancellationToken);
+            video.UpdateTrailer(trailerPath);
+        }
+    }
+
     private async Task ClearStorage(Entities.Video video, CancellationToken cancellationToken)
     {
         if (video.Thumb is not null)
@@ -80,26 +100,26 @@ public class CreateVideo : ICreateVideo
             await _storageService.Delete(video.ThumbHalf.Path, cancellationToken);
     }
 
-    private async Task UpdateMediaImages(CreateVideoInput input, Entities.Video video, CancellationToken cancellationToken)
+    private async Task UpdateImages(CreateVideoInput input, Entities.Video video, CancellationToken cancellationToken)
     {
         if (input.Thumb is not null)
         {
-            var thumbPath = await _storageService.Upload(
-                $"{video.Id}-thumb.{input.Thumb.Extension}", input.Thumb.FileStream, cancellationToken);
+            var fileName = StorageFileName.Create(video.Id, nameof(video.Thumb), input.Thumb.Extension);
+            var thumbPath = await _storageService.Upload(fileName, input.Thumb.FileStream, cancellationToken);
             video.UpdateThumb(thumbPath);
         }
 
         if (input.Banner is not null)
         {
-            var bannerPath = await _storageService.Upload(
-                $"{video.Id}-banner.{input.Banner.Extension}", input.Banner.FileStream, cancellationToken);
+            var fileName = StorageFileName.Create(video.Id, nameof(video.Banner), input.Banner.Extension);
+            var bannerPath = await _storageService.Upload(fileName, input.Banner.FileStream, cancellationToken);
             video.UpdateBanner(bannerPath);
         }
 
         if (input.ThumbHalf is not null)
         {
-            var thumbHalfPath = await _storageService.Upload(
-                $"{video.Id}-thumb-half.{input.ThumbHalf.Extension}", input.ThumbHalf.FileStream, cancellationToken);
+            var fileName = StorageFileName.Create(video.Id, nameof(video.ThumbHalf), input.ThumbHalf.Extension);
+            var thumbHalfPath = await _storageService.Upload(fileName, input.ThumbHalf.FileStream, cancellationToken);
             video.UpdateThumbHalf(thumbHalfPath);
         }
     }

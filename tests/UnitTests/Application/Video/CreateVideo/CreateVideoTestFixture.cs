@@ -18,7 +18,9 @@ public class CreateVideoTestFixture : VideoTestFixtureBase
         List<Guid>? castMembersIds = null,
         FileInput? thumb = null,
         FileInput? banner = null,
-        FileInput? thumbHalf = null
+        FileInput? thumbHalf = null,
+        FileInput? media = null,
+        FileInput? trailer = null
     )
     {
         return new CreateVideoInput
@@ -35,7 +37,9 @@ public class CreateVideoTestFixture : VideoTestFixtureBase
             castMembersIds,
             thumb,
             banner,
-            thumbHalf
+            thumbHalf,
+            media,
+            trailer
         );
     }
 

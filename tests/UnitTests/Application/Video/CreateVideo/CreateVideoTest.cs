@@ -224,7 +224,7 @@ public class CreateVideoTest
         var expectedThumbHalfName = "thumb-half.jpg";
         var expectedThumbName = "banner.jpg";
         var expectedBannerName = "thumb.jpg";
-        storageServiceMock.Setup(x => x.Upload(It.Is<string>(x => x.EndsWith("thumb-half.jpg")), It.IsAny<Stream>(), It.IsAny<CancellationToken>()))
+        storageServiceMock.Setup(x => x.Upload(It.Is<string>(x => x.EndsWith("thumbhalf.jpg")), It.IsAny<Stream>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(expectedThumbHalfName);
         storageServiceMock.Setup(x => x.Upload(It.Is<string>(x => x.EndsWith("thumb.jpg")), It.IsAny<Stream>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(expectedThumbName);
@@ -307,7 +307,7 @@ public class CreateVideoTest
             .ReturnsAsync("123-banner.jpg");
         storageServiceMock.Setup(x => x.Upload(It.Is<string>(x => x.EndsWith("thumb.jpg")), It.IsAny<Stream>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync("123-thumb.jpg");
-        storageServiceMock.Setup(x => x.Upload(It.Is<string>(x => x.EndsWith("thumb-half.jpg")), It.IsAny<Stream>(), It.IsAny<CancellationToken>()))
+        storageServiceMock.Setup(x => x.Upload(It.Is<string>(x => x.EndsWith("thumbhalf.jpg")), It.IsAny<Stream>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new Exception("Something went wrong in upload"));
         var useCase = new CreateVideo(
             Mock.Of<IVideoRepository>(),
@@ -629,5 +629,106 @@ public class CreateVideoTest
         unitOfWorkMock.Verify(x => x.Commit(It.IsAny<CancellationToken>()), Times.Never);
 
         castMemberRepositoryMock.VerifyAll();
+    }
+
+    [Fact(DisplayName = nameof(CreateVideoWithMedia))]
+    [Trait("Application", "CreateVideo - Uses Cases")]
+    public async Task CreateVideoWithMedia()
+    {
+        // Arrange
+        var videoRepositoryMock = new Mock<IVideoRepository>();
+        var unitOfWorkMock = new Mock<IUnitOfWork>();
+        var storageServiceMock = new Mock<IStorageService>();
+        var expectedMediaName = $"/storage/{_testFixture.GetValidMediaPath()}";
+        storageServiceMock.Setup(x => x.Upload(It.IsAny<string>(), It.IsAny<Stream>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expectedMediaName);
+        var useCase = new CreateVideo(
+            videoRepositoryMock.Object,
+            Mock.Of<ICategoryRepository>(),
+            Mock.Of<IGenreRepository>(),
+            Mock.Of<ICastMemberRepository>(),
+            unitOfWorkMock.Object,
+            storageServiceMock.Object
+        );
+        var input = _testFixture.GetValidCreateVideoInput(media: _testFixture.GetValidVideoFileInput());
+
+        // Act
+        var output = await useCase.Handle(input, CancellationToken.None);
+
+        // Assert
+        output.Id.Should().NotBeEmpty();
+        output.CreatedAt.Should().BeSameDateAs(DateTime.Now);
+        output.Title.Should().Be(input.Title);
+        output.Description.Should().Be(input.Description);
+        output.Published.Should().Be(input.Published);
+        output.Duration.Should().Be(input.Duration);
+        output.Rating.Should().Be(input.MovieRating);
+        output.YearLaunched.Should().Be(input.YearLaunched);
+        output.Opened.Should().Be(input.Opened);
+        output.Media.Should().Be(expectedMediaName);
+
+        videoRepositoryMock.Verify(x => x.Insert(It.Is<Entities.Video>(
+            video => video.Title == input.Title &&
+            video.Description == input.Description &&
+            video.Published == input.Published &&
+            video.Duration == input.Duration &&
+            video.MovieRating == input.MovieRating &&
+            video.YearLaunched == input.YearLaunched &&
+            video.Opened == input.Opened),
+            It.IsAny<CancellationToken>()), Times.Once);
+
+        unitOfWorkMock.Verify(x => x.Commit(It.IsAny<CancellationToken>()), Times.Once);
+        storageServiceMock.Verify(x => x.Upload(It.IsAny<string>(), It.IsAny<Stream>(), It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact(DisplayName = nameof(CreateVideoWithTrailer))]
+    [Trait("Application", "CreateVideo - Uses Cases")]
+    public async Task CreateVideoWithTrailer()
+    {
+        // Arrange
+        var videoRepositoryMock = new Mock<IVideoRepository>();
+        var unitOfWorkMock = new Mock<IUnitOfWork>();
+        var storageServiceMock = new Mock<IStorageService>();
+        var expectedTrailerName = $"/storage/{_testFixture.GetValidMediaPath()}";
+        storageServiceMock.Setup(x => x.Upload(It.IsAny<string>(), It.IsAny<Stream>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expectedTrailerName);
+        var useCase = new CreateVideo(
+            videoRepositoryMock.Object,
+            Mock.Of<ICategoryRepository>(),
+            Mock.Of<IGenreRepository>(),
+            Mock.Of<ICastMemberRepository>(),
+            unitOfWorkMock.Object,
+            storageServiceMock.Object
+        );
+        var input = _testFixture.GetValidCreateVideoInput(trailer: _testFixture.GetValidVideoFileInput());
+
+        // Act
+        var output = await useCase.Handle(input, CancellationToken.None);
+
+        // Assert
+        output.Id.Should().NotBeEmpty();
+        output.CreatedAt.Should().BeSameDateAs(DateTime.Now);
+        output.Title.Should().Be(input.Title);
+        output.Description.Should().Be(input.Description);
+        output.Published.Should().Be(input.Published);
+        output.Duration.Should().Be(input.Duration);
+        output.Rating.Should().Be(input.MovieRating);
+        output.YearLaunched.Should().Be(input.YearLaunched);
+        output.Opened.Should().Be(input.Opened);
+        output.Trailer.Should().Be(expectedTrailerName);
+        output.Media.Should().BeNull();
+
+        videoRepositoryMock.Verify(x => x.Insert(It.Is<Entities.Video>(
+            video => video.Title == input.Title &&
+            video.Description == input.Description &&
+            video.Published == input.Published &&
+            video.Duration == input.Duration &&
+            video.MovieRating == input.MovieRating &&
+            video.YearLaunched == input.YearLaunched &&
+            video.Opened == input.Opened),
+            It.IsAny<CancellationToken>()), Times.Once);
+
+        unitOfWorkMock.Verify(x => x.Commit(It.IsAny<CancellationToken>()), Times.Once);
+        storageServiceMock.Verify(x => x.Upload(It.IsAny<string>(), It.IsAny<Stream>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 }

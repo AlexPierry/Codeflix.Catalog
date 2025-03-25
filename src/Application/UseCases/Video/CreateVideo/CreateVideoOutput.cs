@@ -18,7 +18,9 @@ public record CreateVideoOutput(
     IReadOnlyCollection<Guid>? CastMembersIds,
     string? Thumb,
     string? Banner,
-    string? ThumbHalf
+    string? ThumbHalf,
+    string? Media,
+    string? Trailer
 )
 {
     public static CreateVideoOutput FromVideo(Entities.Video video)
@@ -38,7 +40,9 @@ public record CreateVideoOutput(
             video.CastMembers,
             video.Thumb?.Path,
             video.Banner?.Path,
-            video.ThumbHalf?.Path
+            video.ThumbHalf?.Path,
+            video.Media?.FilePath,
+            video.Trailer?.FilePath
         );
     }
 }
