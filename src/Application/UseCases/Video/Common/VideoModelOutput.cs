@@ -1,9 +1,9 @@
 using Domain.Enum;
 using Entities = Domain.Entity;
+namespace Application.UseCases.Video.Common;
 
-namespace Application.UseCases.Video.CreateVideo;
-
-public record CreateVideoOutput(
+public record VideoModelOutput
+(
     Guid Id,
     string Title,
     string Description,
@@ -23,9 +23,9 @@ public record CreateVideoOutput(
     string? Trailer
 )
 {
-    public static CreateVideoOutput FromVideo(Entities.Video video)
+    public static VideoModelOutput FromVideo(Entities.Video video)
     {
-        return new CreateVideoOutput(
+        return new VideoModelOutput(
             video.Id,
             video.Title,
             video.Description,
@@ -46,3 +46,4 @@ public record CreateVideoOutput(
         );
     }
 }
+

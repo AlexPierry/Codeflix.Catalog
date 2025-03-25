@@ -297,9 +297,9 @@ public class CreateVideoTest
             .WithMessage("Something went wrong in upload");
     }
 
-    [Fact(DisplayName = nameof(ThrowsExceptionAndRollbackUploadInErrorCases))]
+    [Fact(DisplayName = nameof(ThrowsExceptionAndRollbackUploadInImagesErrorCases))]
     [Trait("Application", "CreateVideo - Uses Cases")]
-    public async Task ThrowsExceptionAndRollbackUploadInErrorCases()
+    public async Task ThrowsExceptionAndRollbackUploadInImagesErrorCases()
     {
         // Arrange
         var storageServiceMock = new Mock<IStorageService>();
@@ -650,7 +650,7 @@ public class CreateVideoTest
             unitOfWorkMock.Object,
             storageServiceMock.Object
         );
-        var input = _testFixture.GetValidCreateVideoInput(media: _testFixture.GetValidVideoFileInput());
+        var input = _testFixture.GetValidCreateVideoInput(media: _testFixture.GetValidMediaFileInput());
 
         // Act
         var output = await useCase.Handle(input, CancellationToken.None);
@@ -700,7 +700,7 @@ public class CreateVideoTest
             unitOfWorkMock.Object,
             storageServiceMock.Object
         );
-        var input = _testFixture.GetValidCreateVideoInput(trailer: _testFixture.GetValidVideoFileInput());
+        var input = _testFixture.GetValidCreateVideoInput(trailer: _testFixture.GetValidMediaFileInput());
 
         // Act
         var output = await useCase.Handle(input, CancellationToken.None);
@@ -730,5 +730,41 @@ public class CreateVideoTest
 
         unitOfWorkMock.Verify(x => x.Commit(It.IsAny<CancellationToken>()), Times.Once);
         storageServiceMock.Verify(x => x.Upload(It.IsAny<string>(), It.IsAny<Stream>(), It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact(DisplayName = nameof(ThrowsExceptionAndRollbackUploadInMediaErrorCases))]
+    [Trait("Application", "CreateVideo - Uses Cases")]
+    public async Task ThrowsExceptionAndRollbackUploadInMediaErrorCases()
+    {
+        // Arrange
+        var storageServiceMock = new Mock<IStorageService>();
+        storageServiceMock.Setup(x => x.Upload(It.Is<string>(x => x.EndsWith("media.mp4")), It.IsAny<Stream>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync("123-media.mp4");
+        storageServiceMock.Setup(x => x.Upload(It.Is<string>(x => x.EndsWith("trailer.mp4")), It.IsAny<Stream>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync("123-trailer.mp4");
+        var unitOfWorkMock = new Mock<IUnitOfWork>();
+        unitOfWorkMock.Setup(x => x.Commit(It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new Exception("Something went wrong with the commit"));
+
+        var useCase = new CreateVideo(
+            Mock.Of<IVideoRepository>(),
+            Mock.Of<ICategoryRepository>(),
+            Mock.Of<IGenreRepository>(),
+            Mock.Of<ICastMemberRepository>(),
+            unitOfWorkMock.Object,
+            storageServiceMock.Object
+        );
+        var input = _testFixture.GetCreateVideoInputWithAllMedias();
+
+        // Act
+        var action = async () => await useCase.Handle(input, CancellationToken.None);
+
+        // Assert
+        await action.Should().ThrowAsync<Exception>()
+            .WithMessage("Something went wrong with the commit");
+
+        storageServiceMock.Verify(x => x.Delete(It.Is<string>(x => x == "123-media.mp4"), It.IsAny<CancellationToken>()), Times.Once);
+        storageServiceMock.Verify(x => x.Delete(It.Is<string>(x => x == "123-trailer.mp4"), It.IsAny<CancellationToken>()), Times.Once);
+        storageServiceMock.Verify(x => x.Delete(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
     }
 }

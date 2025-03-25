@@ -55,6 +55,23 @@ public abstract class VideoTestFixtureBase : BaseFixture
         return new Video(title, description, opened, published, year, duration, rating);
     }
 
+    internal Video GetValidVideoWithAllProperties()
+    {
+        var video = GetValidVideo();
+        video.UpdateBanner(GetValidImagePath());
+        video.UpdateThumb(GetValidImagePath());
+        video.UpdateThumbHalf(GetValidImagePath());
+        video.UpdateTrailer(GetValidMediaPath());
+        video.UpdateMedia(GetValidMediaPath());
+
+        var random = new Random();
+        Enumerable.Range(1, random.Next(2, 5)).ToList().ForEach(_ => video.AddCategory(Guid.NewGuid()));
+        Enumerable.Range(1, random.Next(2, 5)).ToList().ForEach(_ => video.AddGenre(Guid.NewGuid()));
+        Enumerable.Range(1, random.Next(2, 5)).ToList().ForEach(_ => video.AddCastMember(Guid.NewGuid()));
+
+        return video;
+    }
+
     internal string GetTooLongTitle()
     {
         return Faker.Lorem.Letter(400);
@@ -105,7 +122,7 @@ public abstract class VideoTestFixtureBase : BaseFixture
         return fileInput;
     }
 
-    internal FileInput GetValidVideoFileInput()
+    internal FileInput GetValidMediaFileInput()
     {
         var exampleStream = new MemoryStream(Encoding.ASCII.GetBytes("teste"));
         var fileInput = new FileInput("mp4", exampleStream);

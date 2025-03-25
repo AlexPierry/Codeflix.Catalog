@@ -20,5 +20,5 @@ public record CreateVideoInput(
     FileInput? ThumbHalf = null,
     FileInput? Media = null,
     FileInput? Trailer = null
-) : IRequest<CreateVideoOutput>;
+) : IRequest<VideoModelOutput>;
 

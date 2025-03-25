@@ -1,6 +1,7 @@
 using Application.Common;
 using Application.Exceptions;
 using Application.Interfaces;
+using Application.UseCases.Video.Common;
 using Domain.Exceptions;
 using Domain.Repository;
 using Domain.Validation;
@@ -33,7 +34,7 @@ public class CreateVideo : ICreateVideo
         _storageService = storageService;
     }
 
-    public async Task<CreateVideoOutput> Handle(CreateVideoInput input, CancellationToken cancellationToken)
+    public async Task<VideoModelOutput> Handle(CreateVideoInput input, CancellationToken cancellationToken)
     {
         var video = new Entities.Video(
             input.Title,
@@ -63,7 +64,7 @@ public class CreateVideo : ICreateVideo
             await _videoRepository.Insert(video, cancellationToken);
             await _unitOfWork.Commit(cancellationToken);
 
-            return CreateVideoOutput.FromVideo(video);
+            return VideoModelOutput.FromVideo(video);
 
         }
         catch (Exception)
@@ -94,10 +95,18 @@ public class CreateVideo : ICreateVideo
     {
         if (video.Thumb is not null)
             await _storageService.Delete(video.Thumb.Path, cancellationToken);
+
         if (video.Banner is not null)
             await _storageService.Delete(video.Banner.Path, cancellationToken);
+
         if (video.ThumbHalf is not null)
             await _storageService.Delete(video.ThumbHalf.Path, cancellationToken);
+
+        if (video.Media is not null)
+            await _storageService.Delete(video.Media.FilePath, cancellationToken);
+
+        if (video.Trailer is not null)
+            await _storageService.Delete(video.Trailer.FilePath, cancellationToken);
     }
 
     private async Task UpdateImages(CreateVideoInput input, Entities.Video video, CancellationToken cancellationToken)
