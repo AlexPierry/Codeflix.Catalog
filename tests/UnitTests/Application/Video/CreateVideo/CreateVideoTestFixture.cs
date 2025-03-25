@@ -1,3 +1,4 @@
+using Application.UseCases.Video.Common;
 using Application.UseCases.Video.CreateVideo;
 using UnitTests.Common.Fixtures;
 
@@ -11,8 +12,14 @@ public class CreateVideoTestFixtureCollection : ICollectionFixture<CreateVideoTe
 
 public class CreateVideoTestFixture : VideoTestFixtureBase
 {
-
-    public CreateVideoInput GetValidCreateVideoInput(List<Guid>? CategoriesIds = null)
+    public CreateVideoInput GetValidCreateVideoInput(
+        List<Guid>? categoriesIds = null,
+        List<Guid>? genresIds = null,
+        List<Guid>? castMembersIds = null,
+        FileInput? thumb = null,
+        FileInput? banner = null,
+        FileInput? thumbHalf = null
+    )
     {
         return new CreateVideoInput
         (
@@ -23,7 +30,12 @@ public class CreateVideoTestFixture : VideoTestFixtureBase
             GetValidPublished(),
             GetValidDuration(),
             GetRandomMovieRating(),
-            CategoriesIds
+            categoriesIds,
+            genresIds,
+            castMembersIds,
+            thumb,
+            banner,
+            thumbHalf
         );
     }
 }

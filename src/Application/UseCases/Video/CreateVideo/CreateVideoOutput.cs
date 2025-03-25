@@ -13,7 +13,13 @@ public record CreateVideoOutput(
     int YearLaunched,
     bool Opened,
     DateTime CreatedAt,
-    IReadOnlyCollection<Guid>? CategoriesIds = null)
+    IReadOnlyCollection<Guid>? CategoriesIds,
+    IReadOnlyCollection<Guid>? GenresIds,
+    IReadOnlyCollection<Guid>? CastMembersIds,
+    string? Thumb,
+    string? Banner,
+    string? ThumbHalf
+)
 {
     public static CreateVideoOutput FromVideo(Entities.Video video)
     {
@@ -27,7 +33,12 @@ public record CreateVideoOutput(
             video.YearLaunched,
             video.Opened,
             video.CreatedAt,
-            video.Categories
+            video.Categories,
+            video.Genres,
+            video.CastMembers,
+            video.Thumb?.Path,
+            video.Banner?.Path,
+            video.ThumbHalf?.Path
         );
     }
 }

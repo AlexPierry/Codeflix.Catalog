@@ -1,3 +1,5 @@
+using System.Text;
+using Application.UseCases.Video.Common;
 using Domain.Entity;
 using Domain.Enum;
 
@@ -94,5 +96,12 @@ public abstract class VideoTestFixtureBase : BaseFixture
     internal Media GetValidMedia()
     {
         return new Media(GetValidMediaPath());
+    }
+
+    internal FileInput GetValidImageFileInput()
+    {
+        var exampleStream = new MemoryStream(Encoding.ASCII.GetBytes("teste"));
+        var fileInput = new FileInput("jpg", exampleStream);
+        return fileInput;
     }
 }

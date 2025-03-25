@@ -109,4 +109,9 @@ public class GenreRepository : IGenreRepository
 
         return orderedQuery.ThenBy(x => x.CreatedAt);
     }
+
+    public Task<IReadOnlyList<Guid>> GetIdsListByIds(List<Guid> guids, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
 }

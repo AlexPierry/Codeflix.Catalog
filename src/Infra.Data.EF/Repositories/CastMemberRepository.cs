@@ -78,4 +78,9 @@ public class CastMemberRepository : ICastMemberRepository
 
         return orderedQuery.ThenBy(x => x.CreatedAt);
     }
+
+    public Task<IReadOnlyList<Guid>> GetIdsListByIds(List<Guid> guids, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
 }

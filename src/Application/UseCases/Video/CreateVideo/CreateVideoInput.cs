@@ -1,3 +1,4 @@
+using Application.UseCases.Video.Common;
 using Domain.Enum;
 using MediatR;
 
@@ -11,6 +12,11 @@ public record CreateVideoInput(
     bool Published,
     int Duration,
     MovieRating MovieRating,
-    IReadOnlyCollection<Guid>? CategoriesIds = null
+    IReadOnlyCollection<Guid>? CategoriesIds = null,
+    IReadOnlyCollection<Guid>? GenresIds = null,
+    IReadOnlyCollection<Guid>? CastMembersIds = null,
+    FileInput? Thumb = null,
+    FileInput? Banner = null,
+    FileInput? ThumbHalf = null
 ) : IRequest<CreateVideoOutput>;
 
