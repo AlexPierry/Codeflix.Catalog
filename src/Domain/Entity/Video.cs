@@ -47,7 +47,7 @@ public class Video : AggregateRoot
     }
 
     public void Update(string title, string description, bool opened, bool published,
-        int year, int duration, MovieRating movieRating)
+        int year, int duration, MovieRating? movieRating)
     {
         Title = title;
         Description = description;
@@ -55,7 +55,8 @@ public class Video : AggregateRoot
         Published = published;
         YearLaunched = year;
         Duration = duration;
-        MovieRating = movieRating;
+        if (movieRating.HasValue)
+            MovieRating = movieRating.Value;
     }
 
     public void Validate(ValidationHandler handler)

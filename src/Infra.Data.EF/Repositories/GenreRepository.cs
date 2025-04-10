@@ -9,7 +9,6 @@ namespace Infra.Data.EF.Repositories;
 
 public class GenreRepository : IGenreRepository
 {
-
     private readonly CodeflixCatalogDbContext _context;
 
     private DbSet<Genre> _genres => _context.Set<Genre>();
@@ -111,6 +110,11 @@ public class GenreRepository : IGenreRepository
     }
 
     public Task<IReadOnlyList<Guid>> GetIdsListByIds(List<Guid> guids, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<IReadOnlyList<Genre>> GetListByIds(List<Guid> ids, CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
     }

@@ -6,6 +6,7 @@ using Entities = Domain.Entity;
 using Domain.Exceptions;
 using Application.UseCases.Video.CreateVideo;
 using Application.Exceptions;
+using Domain.Extensions;
 
 namespace UnitTests.Application.Video;
 
@@ -46,7 +47,7 @@ public class CreateVideoTest
         output.Description.Should().Be(input.Description);
         output.Published.Should().Be(input.Published);
         output.Duration.Should().Be(input.Duration);
-        output.Rating.Should().Be(input.MovieRating);
+        output.Rating.Should().Be(input.MovieRating.ToFriendlyString());
         output.YearLaunched.Should().Be(input.YearLaunched);
         output.Opened.Should().Be(input.Opened);
 
@@ -94,10 +95,10 @@ public class CreateVideoTest
         output.Description.Should().Be(input.Description);
         output.Published.Should().Be(input.Published);
         output.Duration.Should().Be(input.Duration);
-        output.Rating.Should().Be(input.MovieRating);
+        output.Rating.Should().Be(input.MovieRating.ToFriendlyString());
         output.YearLaunched.Should().Be(input.YearLaunched);
         output.Opened.Should().Be(input.Opened);
-        output.Thumb.Should().Be(expectedThumbName);
+        output.ThumbFileUrl.Should().Be(expectedThumbName);
 
         videoRepositoryMock.Verify(x => x.Insert(It.Is<Entities.Video>(
             video => video.Title == input.Title &&
@@ -144,10 +145,10 @@ public class CreateVideoTest
         output.Description.Should().Be(input.Description);
         output.Published.Should().Be(input.Published);
         output.Duration.Should().Be(input.Duration);
-        output.Rating.Should().Be(input.MovieRating);
+        output.Rating.Should().Be(input.MovieRating.ToFriendlyString());
         output.YearLaunched.Should().Be(input.YearLaunched);
         output.Opened.Should().Be(input.Opened);
-        output.Banner.Should().Be(expectedBannerName);
+        output.BannerFileUrl.Should().Be(expectedBannerName);
 
         videoRepositoryMock.Verify(x => x.Insert(It.Is<Entities.Video>(
             video => video.Title == input.Title &&
@@ -194,10 +195,10 @@ public class CreateVideoTest
         output.Description.Should().Be(input.Description);
         output.Published.Should().Be(input.Published);
         output.Duration.Should().Be(input.Duration);
-        output.Rating.Should().Be(input.MovieRating);
+        output.Rating.Should().Be(input.MovieRating.ToFriendlyString());
         output.YearLaunched.Should().Be(input.YearLaunched);
         output.Opened.Should().Be(input.Opened);
-        output.ThumbHalf.Should().Be(expectedThumbHalfName);
+        output.ThumbHalfFileUrl.Should().Be(expectedThumbHalfName);
 
         videoRepositoryMock.Verify(x => x.Insert(It.Is<Entities.Video>(
             video => video.Title == input.Title &&
@@ -250,12 +251,12 @@ public class CreateVideoTest
         output.Description.Should().Be(input.Description);
         output.Published.Should().Be(input.Published);
         output.Duration.Should().Be(input.Duration);
-        output.Rating.Should().Be(input.MovieRating);
+        output.Rating.Should().Be(input.MovieRating.ToFriendlyString());
         output.YearLaunched.Should().Be(input.YearLaunched);
         output.Opened.Should().Be(input.Opened);
-        output.Banner.Should().Be(expectedBannerName);
-        output.Thumb.Should().Be(expectedThumbName);
-        output.ThumbHalf.Should().Be(expectedThumbHalfName);
+        output.BannerFileUrl.Should().Be(expectedBannerName);
+        output.ThumbFileUrl.Should().Be(expectedThumbName);
+        output.ThumbHalfFileUrl.Should().Be(expectedThumbHalfName);
 
         videoRepositoryMock.Verify(x => x.Insert(It.Is<Entities.Video>(
             video => video.Title == input.Title &&
@@ -388,10 +389,10 @@ public class CreateVideoTest
         output.Description.Should().Be(input.Description);
         output.Published.Should().Be(input.Published);
         output.Duration.Should().Be(input.Duration);
-        output.Rating.Should().Be(input.MovieRating);
+        output.Rating.Should().Be(input.MovieRating.ToFriendlyString());
         output.YearLaunched.Should().Be(input.YearLaunched);
         output.Opened.Should().Be(input.Opened);
-        output.CategoriesIds.Should().BeEquivalentTo(exampleCategoriesIds);
+        output.Categories.Select(c => c.Id).Should().BeEquivalentTo(exampleCategoriesIds);
 
         videoRepositoryMock.Verify(x => x.Insert(It.Is<Entities.Video>(
             video =>
@@ -478,11 +479,11 @@ public class CreateVideoTest
         output.Description.Should().Be(input.Description);
         output.Published.Should().Be(input.Published);
         output.Duration.Should().Be(input.Duration);
-        output.Rating.Should().Be(input.MovieRating);
+        output.Rating.Should().Be(input.MovieRating.ToFriendlyString());
         output.YearLaunched.Should().Be(input.YearLaunched);
         output.Opened.Should().Be(input.Opened);
-        output.CategoriesIds.Should().BeEmpty();
-        output.GenresIds.Should().BeEquivalentTo(exampleIds);
+        output.Categories.Should().BeEmpty();
+        output.Genres.Select(g => g.Id).Should().BeEquivalentTo(exampleIds);
 
         videoRepositoryMock.Verify(x => x.Insert(It.Is<Entities.Video>(
             video =>
@@ -569,12 +570,12 @@ public class CreateVideoTest
         output.Description.Should().Be(input.Description);
         output.Published.Should().Be(input.Published);
         output.Duration.Should().Be(input.Duration);
-        output.Rating.Should().Be(input.MovieRating);
+        output.Rating.Should().Be(input.MovieRating.ToFriendlyString());
         output.YearLaunched.Should().Be(input.YearLaunched);
         output.Opened.Should().Be(input.Opened);
-        output.CategoriesIds.Should().BeEmpty();
-        output.GenresIds.Should().BeEmpty();
-        output.CastMembersIds.Should().BeEquivalentTo(exampleIds);
+        output.Categories.Should().BeEmpty();
+        output.Genres.Should().BeEmpty();
+        output.CastMembers.Select(cm => cm.Id).Should().BeEquivalentTo(exampleIds);
 
         videoRepositoryMock.Verify(x => x.Insert(It.Is<Entities.Video>(
             video =>
@@ -662,10 +663,10 @@ public class CreateVideoTest
         output.Description.Should().Be(input.Description);
         output.Published.Should().Be(input.Published);
         output.Duration.Should().Be(input.Duration);
-        output.Rating.Should().Be(input.MovieRating);
+        output.Rating.Should().Be(input.MovieRating.ToFriendlyString());
         output.YearLaunched.Should().Be(input.YearLaunched);
         output.Opened.Should().Be(input.Opened);
-        output.Media.Should().Be(expectedMediaName);
+        output.VideoFileUrl.Should().Be(expectedMediaName);
 
         videoRepositoryMock.Verify(x => x.Insert(It.Is<Entities.Video>(
             video => video.Title == input.Title &&
@@ -712,11 +713,11 @@ public class CreateVideoTest
         output.Description.Should().Be(input.Description);
         output.Published.Should().Be(input.Published);
         output.Duration.Should().Be(input.Duration);
-        output.Rating.Should().Be(input.MovieRating);
+        output.Rating.Should().Be(input.MovieRating.ToFriendlyString());
         output.YearLaunched.Should().Be(input.YearLaunched);
         output.Opened.Should().Be(input.Opened);
-        output.Trailer.Should().Be(expectedTrailerName);
-        output.Media.Should().BeNull();
+        output.TrailerFileUrl.Should().Be(expectedTrailerName);
+        output.VideoFileUrl.Should().BeNull();
 
         videoRepositoryMock.Verify(x => x.Insert(It.Is<Entities.Video>(
             video => video.Title == input.Title &&

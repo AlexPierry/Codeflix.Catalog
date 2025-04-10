@@ -13,14 +13,18 @@ public class ListVideosOutput : PaginatedListOutput<VideoModelOutput>
     {
     }
 
-    public static ListVideosOutput FromSearchOutput(SearchOutput<Entities.Video> searchOutput)
+    public static ListVideosOutput FromSearchOutput(
+        SearchOutput<Entities.Video> searchOutput,
+        IReadOnlyList<Entities.Category>? relatedCategories = null,
+        IReadOnlyList<Entities.Genre>? relatedGenres = null,
+        IReadOnlyList<Entities.CastMember>? relatedCastMembers = null)
     {
         return new ListVideosOutput(
             searchOutput.CurrentPage,
             searchOutput.PerPage,
             searchOutput.Total,
             searchOutput.Items
-                .Select(VideoModelOutput.FromVideo)
+                .Select(video => VideoModelOutput.FromVideo(video, relatedCategories, relatedGenres, relatedCastMembers))
                 .ToList()
                 .AsReadOnly()
         );
