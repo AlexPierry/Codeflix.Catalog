@@ -1,5 +1,6 @@
 using Domain.Entity;
 using Domain.Enum;
+using Domain.SeedWork.SearchableRepository;
 using IntegrationTest.Base;
 
 namespace IntegrationTests.Infra.Data.EF.Repositories;
@@ -57,6 +58,11 @@ public class VideoRepositoryTestFixture : BaseFixture
         var rating = GetRandomMovieRating();
 
         return new Video(title, description, opened, published, year, duration, rating);
+    }
+
+    internal List<Video> GetVideoList(int count)
+    {
+        return Enumerable.Range(1, count).Select(_ => GetValidVideo()).ToList();
     }
 
     internal Video GetValidVideoWithAllProperties()
@@ -167,5 +173,32 @@ public class VideoRepositoryTestFixture : BaseFixture
     public List<Genre> GetRandomGenreList()
     {
         return Enumerable.Range(1, Random.Shared.Next(1, 5)).Select(_ => GetExampleGenre()).ToList();
+    }
+
+    internal List<Video> GetExampleVideoListWithNames(List<string> titles)
+    {
+        return titles.Select(title =>
+        {
+            var video = GetValidVideo();
+            video.Update(title, video.Description, video.Opened, video.Published, video.YearLaunched, video.Duration, video.MovieRating);
+            return video;
+        }).ToList();
+    }
+
+    internal List<Video> CloneVideoListOrdered(List<Video> videos, string orderBy, SearchOrder searchOrder)
+    {
+        var listClone = new List<Video>(videos);
+        var orderedEnumarable = (orderBy.ToLower(), searchOrder) switch
+        {
+            ("title", SearchOrder.Asc) => listClone.OrderBy(x => x.Title),
+            ("title", SearchOrder.Desc) => listClone.OrderByDescending(x => x.Title),
+            ("id", SearchOrder.Asc) => listClone.OrderBy(x => x.Id),
+            ("id", SearchOrder.Desc) => listClone.OrderByDescending(x => x.Id),
+            ("createdat", SearchOrder.Asc) => listClone.OrderBy(x => x.CreatedAt),
+            ("createdat", SearchOrder.Desc) => listClone.OrderByDescending(x => x.CreatedAt),
+            _ => listClone.OrderBy(x => x.Title)
+        };
+
+        return orderedEnumarable.ToList();
     }
 }

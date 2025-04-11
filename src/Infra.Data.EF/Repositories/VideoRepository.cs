@@ -96,9 +96,43 @@ public class VideoRepository : IVideoRepository
         }
     }
 
-    public Task<SearchOutput<Video>> Search(SearchInput input, CancellationToken cancellationToken)
+    public async Task<SearchOutput<Video>> Search(SearchInput input, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var toSkip = (input.Page - 1) * input.PerPage;
+
+        var query = _videos.AsNoTracking();
+
+        query = AddOrderToQuery(query, input.OrderBy, input.Order);
+
+        if (!string.IsNullOrWhiteSpace(input.Search))
+        {
+            query = query.Where(x => x.Title.Contains(input.Search));
+        }
+
+        var total = await query.CountAsync(cancellationToken);
+
+        var items = await query
+            .Skip(toSkip)
+            .Take(input.PerPage)
+            .ToListAsync(cancellationToken);
+
+        return new SearchOutput<Video>(input.Page, input.PerPage, total, items);
+    }
+
+    private IQueryable<Video> AddOrderToQuery(IQueryable<Video> query, string orderProperty, SearchOrder order)
+    {
+        var orderedQuery = (orderProperty.ToLower(), order) switch
+        {
+            ("title", SearchOrder.Asc) => query.OrderBy(x => x.Title),
+            ("title", SearchOrder.Desc) => query.OrderByDescending(x => x.Title),
+            ("id", SearchOrder.Asc) => query.OrderBy(x => x.Id),
+            ("id", SearchOrder.Desc) => query.OrderByDescending(x => x.Id),
+            ("createdat", SearchOrder.Asc) => query.OrderBy(x => x.CreatedAt),
+            ("createdat", SearchOrder.Desc) => query.OrderByDescending(x => x.CreatedAt),
+            _ => query.OrderBy(x => x.Title)
+        };
+
+        return orderedQuery.ThenBy(x => x.CreatedAt);
     }
 
     public async Task Update(Video video, CancellationToken cancellationToken)

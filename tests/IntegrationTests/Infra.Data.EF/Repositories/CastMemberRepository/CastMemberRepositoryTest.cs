@@ -316,4 +316,110 @@ public class CastMemberRepositoryTest
             outputItem.CreatedAt.Should().Be(expecetedItem.CreatedAt);
         }
     }
+
+    [Fact(DisplayName = nameof(GetIdsListByIds))]
+    [Trait("Integration/Infra.Data", "CastMemberRepository - Repositories")]
+    public async Task GetIdsListByIds()
+    {
+        // Given
+        var dbContext = _fixture.CreateDbContext();
+        var exampleCastMembersList = _fixture.GetExampleCastMembersList(15);
+        await dbContext.AddRangeAsync(exampleCastMembersList);
+        await dbContext.SaveChangesAsync(CancellationToken.None);
+        var castMemberRepository = new CastMemberRepository(dbContext);
+        var ids = exampleCastMembersList.Select(x => x.Id).Take(5).ToList();
+
+        // When
+        var output = await castMemberRepository.GetIdsListByIds(ids, CancellationToken.None);
+
+        // Then        
+        output.Should().NotBeNull();
+        output.Should().HaveCount(ids.Count);
+        output.Should().BeEquivalentTo(ids);
+    }
+
+    [Fact(DisplayName = nameof(GetIdsListByIdsWhenOnlyThreeMatched))]
+    [Trait("Integration/Infra.Data", "CastMemberRepository - Repositories")]
+    public async Task GetIdsListByIdsWhenOnlyThreeMatched()
+    {
+        // Given
+        var dbContext = _fixture.CreateDbContext();
+        var exampleCastMembersList = _fixture.GetExampleCastMembersList(15);
+        await dbContext.AddRangeAsync(exampleCastMembersList);
+        await dbContext.SaveChangesAsync(CancellationToken.None);
+        var castMemberRepository = new CastMemberRepository(dbContext);
+        var ids = exampleCastMembersList.Select(x => x.Id).Take(5).ToList();
+        var idsToCheck = ids.ToList();
+        ids.Add(Guid.NewGuid());
+        ids.Add(Guid.NewGuid());
+
+        // When
+        var output = await castMemberRepository.GetIdsListByIds(ids, CancellationToken.None);
+
+        // Then        
+        output.Should().NotBeNull();
+        output.Should().HaveCount(5);
+        output.Should().BeEquivalentTo(idsToCheck.Take(5));
+    }
+
+    [Fact(DisplayName = nameof(GetListByIds))]
+    [Trait("Integration/Infra.Data", "CastMemberRepository - Repositories")]
+    public async Task GetListByIds()
+    {
+        // Given
+        var dbContext = _fixture.CreateDbContext();
+        var exampleCastMembersList = _fixture.GetExampleCastMembersList(15);
+        await dbContext.AddRangeAsync(exampleCastMembersList);
+        await dbContext.SaveChangesAsync(CancellationToken.None);
+        var castMemberRepository = new CastMemberRepository(dbContext);
+        var ids = exampleCastMembersList.Select(x => x.Id).Take(5).ToList();
+
+        // When
+        var output = await castMemberRepository.GetListByIds(ids, CancellationToken.None);
+
+        // Then        
+        output.Should().NotBeNull();
+        output.Should().HaveCount(ids.Count);
+        output.Should().BeEquivalentTo(exampleCastMembersList.Where(x => ids.Contains(x.Id)));
+        foreach (var outputItem in output)
+        {
+            var exampleItem = exampleCastMembersList.Find(x => x.Id == outputItem.Id);
+            exampleItem.Should().NotBeNull();
+            outputItem!.Name.Should().Be(exampleItem!.Name);
+            outputItem.Type.Should().Be(exampleItem.Type);
+            outputItem.CreatedAt.Should().Be(exampleItem.CreatedAt);
+        }
+    }
+
+    [Fact(DisplayName = nameof(GetListByIdsWhenOnlyThreeMatched))]
+    [Trait("Integration/Infra.Data", "CastMemberRepository - Repositories")]
+    public async Task GetListByIdsWhenOnlyThreeMatched()
+    {
+        // Given
+        var dbContext = _fixture.CreateDbContext();
+        var exampleCastMembersList = _fixture.GetExampleCastMembersList(15);
+        await dbContext.AddRangeAsync(exampleCastMembersList);
+        await dbContext.SaveChangesAsync(CancellationToken.None);
+        var castMemberRepository = new CastMemberRepository(dbContext);
+        var ids = exampleCastMembersList.Select(x => x.Id).Take(5).ToList();
+        var idsToCheck = ids.ToList();
+        ids.Add(Guid.NewGuid());
+        ids.Add(Guid.NewGuid());
+
+        // When
+        var output = await castMemberRepository.GetListByIds(ids, CancellationToken.None);
+
+        // Then        
+        output.Should().NotBeNull();
+        output.Should().HaveCount(5);
+        output.Should().BeEquivalentTo(exampleCastMembersList.Where(x => idsToCheck.Contains(x.Id)));
+        foreach (var outputItem in output)
+        {
+            var exampleItem = exampleCastMembersList.Find(x => x.Id == outputItem.Id);
+            exampleItem.Should().NotBeNull();
+            outputItem!.Name.Should().Be(exampleItem!.Name);
+            outputItem.Type.Should().Be(exampleItem.Type);
+            outputItem.CreatedAt.Should().Be(exampleItem.CreatedAt);
+        }
+    }    
 }

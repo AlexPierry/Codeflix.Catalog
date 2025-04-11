@@ -535,4 +535,102 @@ public class GenreRepositoryTest
             outputItem.CreatedAt.Should().Be(expecetedItem.CreatedAt);
         }
     }
+
+    [Fact(DisplayName = nameof(GetIdsListByIds))]
+    [Trait("Integration/Infra.Data", "GenreRepository - Repositories")]
+    public async Task GetIdsListByIds()
+    {
+        // Given
+        CodeflixCatalogDbContext dbContext = _fixture.CreateDbContext();
+        var exampleGenresList = _fixture.GetExampleGenresList(10);
+        await dbContext.AddRangeAsync(exampleGenresList);
+        await dbContext.SaveChangesAsync(CancellationToken.None);
+        var genreRepository = new GenreRepository(_fixture.CreateDbContext(true));
+        var idsToSearch = exampleGenresList.Select(x => x.Id).Take(5).ToList();
+
+        // When
+        var output = await genreRepository.GetIdsListByIds(idsToSearch, CancellationToken.None);
+
+        // Then
+        output.Should().NotBeNull();
+        output.Should().HaveCount(idsToSearch.Count);
+        output.Should().BeEquivalentTo(idsToSearch);
+    }
+
+    [Fact(DisplayName = nameof(GetIdsListByIdsWhenOnlyThreeIdsMatched))]
+    [Trait("Integration/Infra.Data", "GenreRepository - Repositories")]
+    public async Task GetIdsListByIdsWhenOnlyThreeIdsMatched()
+    {
+        // Given
+        CodeflixCatalogDbContext dbContext = _fixture.CreateDbContext();
+        var exampleGenresList = _fixture.GetExampleGenresList(10);
+        await dbContext.AddRangeAsync(exampleGenresList);
+        await dbContext.SaveChangesAsync(CancellationToken.None);
+        var genreRepository = new GenreRepository(_fixture.CreateDbContext(true));
+        var idsToSearch = exampleGenresList.Select(x => x.Id).Take(3).ToList();
+        var idsToCheck = idsToSearch.ToList();
+        idsToSearch.Add(Guid.NewGuid());
+        idsToSearch.Add(Guid.NewGuid());
+
+        // When
+        var output = await genreRepository.GetIdsListByIds(idsToSearch, CancellationToken.None);
+
+        // Then
+        output.Should().NotBeNull();
+        output.Should().HaveCount(3);
+        output.Should().BeEquivalentTo(idsToCheck);
+    }
+
+    [Fact(DisplayName = nameof(GetListByIds))]
+    [Trait("Integration/Infra.Data", "GenreRepository - Repositories")]
+    public async Task GetListByIds()
+    {
+        // Given
+        CodeflixCatalogDbContext dbContext = _fixture.CreateDbContext();
+        var exampleGenresList = _fixture.GetExampleGenresList(10);
+        await dbContext.AddRangeAsync(exampleGenresList);
+        await dbContext.SaveChangesAsync(CancellationToken.None);
+        var genreRepository = new GenreRepository(_fixture.CreateDbContext(true));
+        var idsToSearch = exampleGenresList.Select(x => x.Id).Take(5).ToList();
+
+        // When
+        var output = await genreRepository.GetListByIds(idsToSearch, CancellationToken.None);
+
+        // Then
+        output.Should().NotBeNull();
+        output.Should().HaveCount(idsToSearch.Count);
+        output.Should().BeEquivalentTo(exampleGenresList.Where(x => idsToSearch.Contains(x.Id)));
+        foreach (var outputItem in output)
+        {
+            var exampleItem = exampleGenresList.Find(x => x.Id == outputItem.Id);
+            exampleItem.Should().NotBeNull();
+            outputItem!.Name.Should().Be(exampleItem!.Name);
+            outputItem.IsActive.Should().Be(exampleItem.IsActive);
+            outputItem.CreatedAt.Should().Be(exampleItem.CreatedAt);
+        }
+    }
+
+    [Fact(DisplayName = nameof(GetListByIdsWhenOnlyThreeIdsMatched))]
+    [Trait("Integration/Infra.Data", "GenreRepository - Repositories")]
+    public async Task GetListByIdsWhenOnlyThreeIdsMatched()
+    {
+        // Given
+        CodeflixCatalogDbContext dbContext = _fixture.CreateDbContext();
+        var exampleGenresList = _fixture.GetExampleGenresList(10);
+        await dbContext.AddRangeAsync(exampleGenresList);
+        await dbContext.SaveChangesAsync(CancellationToken.None);
+        var genreRepository = new GenreRepository(_fixture.CreateDbContext(true));
+        var idsToSearch = exampleGenresList.Select(x => x.Id).Take(3).ToList();
+        var idsToCheck = idsToSearch.ToList();
+        idsToSearch.Add(Guid.NewGuid());
+        idsToSearch.Add(Guid.NewGuid());
+
+        // When
+        var output = await genreRepository.GetListByIds(idsToSearch, CancellationToken.None);
+
+        // Then
+        output.Should().NotBeNull();
+        output.Should().HaveCount(3);
+        output.Should().BeEquivalentTo(exampleGenresList.Where(x => idsToCheck.Contains(x.Id)));
+    }        
 }

@@ -79,13 +79,18 @@ public class CastMemberRepository : ICastMemberRepository
         return orderedQuery.ThenBy(x => x.CreatedAt);
     }
 
-    public Task<IReadOnlyList<Guid>> GetIdsListByIds(List<Guid> guids, CancellationToken cancellationToken)
+    public async Task<IReadOnlyList<Guid>> GetIdsListByIds(List<Guid> ids, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        return await _castMembers.AsNoTracking()
+            .Where(castMember => ids.Contains(castMember.Id))
+            .Select(castMember => castMember.Id)
+            .ToListAsync(cancellationToken);
     }
 
-    public Task<IReadOnlyList<CastMember>> GetListByIds(List<Guid> ids, CancellationToken cancellationToken)
+    public async Task<IReadOnlyList<CastMember>> GetListByIds(List<Guid> ids, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        return await _castMembers.AsNoTracking()
+            .Where(castMember => ids.Contains(castMember.Id))
+            .ToListAsync(cancellationToken);
     }
 }
