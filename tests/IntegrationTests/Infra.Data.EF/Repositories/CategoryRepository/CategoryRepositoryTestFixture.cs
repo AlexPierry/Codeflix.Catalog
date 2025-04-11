@@ -2,7 +2,7 @@ using Domain.Entity;
 using Domain.SeedWork.SearchableRepository;
 using IntegrationTest.Base;
 
-namespace IntegrationTest.Infra.Data.EF.Repositories;
+namespace IntegrationTests.Infra.Data.EF.Repositories;
 
 [CollectionDefinition(nameof(CategoryRepositoriesTestFixture))]
 public class CategoryRepositoryTestFixtureCollection : ICollectionFixture<CategoryRepositoriesTestFixture> { }

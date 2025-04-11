@@ -1,3 +1,4 @@
+using Application.Common;
 using Application.Exceptions;
 using Application.Interfaces;
 using Application.UseCases.Video.Common;
@@ -14,6 +15,7 @@ public class UpdateVideo : IUpdateVideo
     private readonly IGenreRepository _genreRepository;
     private readonly ICategoryRepository _categoryRepository;
     private readonly ICastMemberRepository _castMemberRepository;
+    private readonly IStorageService _storageService;
     private readonly IUnitOfWork _unitOfWork;
 
 
@@ -22,6 +24,7 @@ public class UpdateVideo : IUpdateVideo
         IGenreRepository genreRepository,
         ICategoryRepository categoryRepository,
         ICastMemberRepository castMemberRepository,
+        IStorageService storageService,
         IUnitOfWork unitOfWork)
     {
         _unitOfWork = unitOfWork;
@@ -29,6 +32,7 @@ public class UpdateVideo : IUpdateVideo
         _genreRepository = genreRepository;
         _categoryRepository = categoryRepository;
         _castMemberRepository = castMemberRepository;
+        _storageService = storageService;
     }
 
     public async Task<VideoModelOutput> Handle(UpdateVideoInput input, CancellationToken cancellationToken)
@@ -55,6 +59,8 @@ public class UpdateVideo : IUpdateVideo
 
         await ValidateAndAddRelations(input, currentVideo, cancellationToken);
 
+        await UpdateImages(input, currentVideo, cancellationToken);
+
         await _videoRepository.Update(currentVideo, cancellationToken);
         await _unitOfWork.Commit(cancellationToken);
 
@@ -64,35 +70,41 @@ public class UpdateVideo : IUpdateVideo
 
     private async Task ValidateAndAddRelations(UpdateVideoInput input, Entities.Video video, CancellationToken cancellationToken)
     {
-
         if (input.CategoryIds is not null)
         {
-            await ValidateCategoryIds(input, cancellationToken);
             video.RemoveAllCategories();
-            input.CategoryIds.ToList().ForEach(video.AddCategory);
+            if (input.CategoryIds.Any())
+            {
+                await ValidateCategoryIds(input, cancellationToken);
+                input.CategoryIds.ToList().ForEach(video.AddCategory);
+            }
         }
-
 
         if (input.GenreIds is not null)
         {
-            await ValidateGenreIds(input, cancellationToken);
             video.RemoveAllGenres();
-            input.GenreIds.ToList().ForEach(video.AddGenre);
+            if (input.GenreIds.Any())
+            {
+                await ValidateGenreIds(input, cancellationToken);
+                input.GenreIds.ToList().ForEach(video.AddGenre);
+            }
         }
-
 
         if (input.CastMemberIds is not null)
         {
-            await ValidateCastMemberIds(input, cancellationToken);
             video.RemoveAllCastMembers();
-            input.CastMemberIds.ToList().ForEach(video.AddCastMember);
+            if (input.CastMemberIds.Any())
+            {
+                await ValidateCastMemberIds(input, cancellationToken);
+                input.CastMemberIds.ToList().ForEach(video.AddCastMember);
+            }
         }
     }
 
     private async Task ValidateGenreIds(UpdateVideoInput input, CancellationToken cancellationToken)
     {
-        var persistedGenres = await _genreRepository.GetIdsListByIds(input.GenreIds!.ToList(), cancellationToken);
-        if (persistedGenres.Count < input.GenreIds!.Count)
+        var persistedGenres = await _genreRepository.GetIdsListByIds(input.GenreIds ?? [], cancellationToken);
+        if (persistedGenres?.Count < input.GenreIds?.Count)
         {
             throw new RelatedAggregateException(
                 $"Related genre id (or ids) not found: {string.Join(", ",
@@ -102,8 +114,8 @@ public class UpdateVideo : IUpdateVideo
 
     private async Task ValidateCategoryIds(UpdateVideoInput input, CancellationToken cancellationToken)
     {
-        var persistedCategories = await _categoryRepository.GetIdsListByIds(input.CategoryIds!.ToList(), cancellationToken);
-        if (persistedCategories.Count < input.CategoryIds!.Count)
+        var persistedCategories = await _categoryRepository.GetIdsListByIds(input.CategoryIds ?? [], cancellationToken);
+        if (persistedCategories?.Count < input.CategoryIds?.Count)
         {
             throw new RelatedAggregateException(
                 $"Related category id (or ids) not found: {string.Join(", ",
@@ -113,12 +125,36 @@ public class UpdateVideo : IUpdateVideo
 
     private async Task ValidateCastMemberIds(UpdateVideoInput input, CancellationToken cancellationToken)
     {
-        var persistedCastMembers = await _castMemberRepository.GetIdsListByIds(input.CastMemberIds!.ToList(), cancellationToken);
-        if (persistedCastMembers.Count < input.CastMemberIds!.Count)
+        var persistedCastMembers = await _castMemberRepository.GetIdsListByIds(input.CastMemberIds ?? [], cancellationToken);
+        if (persistedCastMembers?.Count < input.CastMemberIds?.Count)
         {
             throw new RelatedAggregateException(
                 $"Related cast member id (or ids) not found: {string.Join(", ",
                     input.CastMemberIds.Except(persistedCastMembers))}");
+        }
+    }
+
+    private async Task UpdateImages(UpdateVideoInput input, Entities.Video video, CancellationToken cancellationToken)
+    {
+        if (input.Thumb is not null)
+        {
+            var fileName = StorageFileName.Create(video.Id, nameof(video.Thumb), input.Thumb.Extension);
+            var thumbPath = await _storageService.Upload(fileName, input.Thumb.FileStream, cancellationToken);
+            video.UpdateThumb(thumbPath);
+        }
+
+        if (input.Banner is not null)
+        {
+            var fileName = StorageFileName.Create(video.Id, nameof(video.Banner), input.Banner.Extension);
+            var bannerPath = await _storageService.Upload(fileName, input.Banner.FileStream, cancellationToken);
+            video.UpdateBanner(bannerPath);
+        }
+
+        if (input.ThumbHalf is not null)
+        {
+            var fileName = StorageFileName.Create(video.Id, nameof(video.ThumbHalf), input.ThumbHalf.Extension);
+            var thumbHalfPath = await _storageService.Upload(fileName, input.ThumbHalf.FileStream, cancellationToken);
+            video.UpdateThumbHalf(thumbHalfPath);
         }
     }
 }

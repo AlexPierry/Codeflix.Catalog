@@ -1,15 +1,14 @@
 using Domain.Enum;
-using Domain.SeedWork;
 
 namespace Domain.Entity;
 
-public class Media : AggregateRoot
+public class Media : SeedWork.Entity
 {
     public string FilePath { get; private set; }
     public string? EncodedPath { get; private set; }
     public MediaStatus Status { get; private set; }
 
-    public Media(string filePath)
+    public Media(string filePath) : base()
     {
         FilePath = filePath;
         Status = MediaStatus.Pending;

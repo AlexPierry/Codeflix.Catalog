@@ -3,7 +3,7 @@ using Domain.SeedWork.SearchableRepository;
 using IntegrationTest.Base;
 using Entities = Domain.Entity;
 
-namespace IntegrationTest.Infra.Data.EF.Repositories;
+namespace IntegrationTests.Infra.Data.EF.Repositories;
 
 [CollectionDefinition(nameof(CastMemberRepositoryTestFixture))]
 public class CastMemberRepositoryTestFixtureCollection : ICollectionFixture<CastMemberRepositoryTestFixture> { }

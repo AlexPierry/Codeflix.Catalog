@@ -1,3 +1,4 @@
+using Application.UseCases.Video.Common;
 using Application.UseCases.Video.UpdateVideo;
 using UnitTests.Common.Fixtures;
 
@@ -13,7 +14,10 @@ public class UpdateVideoTestFixture : VideoTestFixtureBase
     internal UpdateVideoInput GetUpdateVideoInput(Guid id, bool updateMovieRating,
         List<Guid>? genreIds = null,
         List<Guid>? categoryIds = null,
-        List<Guid>? castMemberIds = null)
+        List<Guid>? castMemberIds = null,
+        FileInput? banner = null,
+        FileInput? thumb = null,
+        FileInput? thumbHalf = null)
     {
         return new UpdateVideoInput(
             Id: id,
@@ -26,7 +30,10 @@ public class UpdateVideoTestFixture : VideoTestFixtureBase
             MovieRating: updateMovieRating ? GetRandomMovieRating() : null,
             GenreIds: genreIds,
             CategoryIds: categoryIds,
-            CastMemberIds: castMemberIds
+            CastMemberIds: castMemberIds,
+            Banner: banner,
+            Thumb: thumb,
+            ThumbHalf: thumbHalf
         );
     }
 }

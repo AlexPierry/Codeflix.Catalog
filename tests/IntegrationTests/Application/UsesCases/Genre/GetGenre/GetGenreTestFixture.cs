@@ -1,5 +1,3 @@
-using IntegrationTest.Infra.Data.EF.Repositories;
-using Entities = Domain.Entity;
 namespace IntegrationTest.Application.UseCases.Genre;
 
 [CollectionDefinition(nameof(GetGenreTestFixture))]

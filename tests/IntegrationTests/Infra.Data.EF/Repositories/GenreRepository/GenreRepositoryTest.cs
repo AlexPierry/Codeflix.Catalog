@@ -7,7 +7,7 @@ using Infra.Data.EF.Models;
 using Infra.Data.EF.Repositories;
 using Microsoft.EntityFrameworkCore;
 
-namespace IntegrationTest.Infra.Data.EF.Repositories;
+namespace IntegrationTests.Infra.Data.EF.Repositories;
 
 [Collection(nameof(GenreRepositoryTestFixture))]
 public class GenreRepositoryTest

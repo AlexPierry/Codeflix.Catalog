@@ -1,5 +1,5 @@
 using IntegrationTest.Base;
-using IntegrationTest.Infra.Data.EF.Repositories;
+using IntegrationTests.Infra.Data.EF.Repositories;
 using Entities = Domain.Entity;
 
 namespace IntegrationTest.Application.UseCases.Genre;
@@ -34,5 +34,5 @@ public class GenreUseCasesBaseFixture : BaseFixture
     {
         var categoryFixture = new CategoryRepositoriesTestFixture();
         return categoryFixture.GetExampleCategoriesList(length);
-    }    
+    }
 }

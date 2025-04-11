@@ -15,6 +15,9 @@ public record UpdateVideoInput(
     MovieRating? MovieRating,
     List<Guid>? GenreIds = null,
     List<Guid>? CategoryIds = null,
-    List<Guid>? CastMemberIds = null
+    List<Guid>? CastMemberIds = null,
+    FileInput? Banner = null,
+    FileInput? Thumb = null,
+    FileInput? ThumbHalf = null
 ) : IRequest<VideoModelOutput>;
 

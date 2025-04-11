@@ -31,13 +31,13 @@ public class Video : AggregateRoot
     public IReadOnlyList<Guid> CastMembers => _castMembers;
 
     public Video(string title, string description, bool opened, bool published,
-        int year, int duration, MovieRating movieRating)
+        int yearLaunched, int duration, MovieRating movieRating)
     {
         Title = title;
         Description = description;
         Opened = opened;
         Published = published;
-        YearLaunched = year;
+        YearLaunched = yearLaunched;
         Duration = duration;
         MovieRating = movieRating;
         CreatedAt = DateTime.Now;

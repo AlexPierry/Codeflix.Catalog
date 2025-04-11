@@ -7,7 +7,7 @@ using FluentAssertions;
 using Infra.Data.EF;
 using Infra.Data.EF.Repositories;
 
-namespace IntegrationTest.Infra.Data.EF.Repositories;
+namespace IntegrationTests.Infra.Data.EF.Repositories;
 
 [Collection(nameof(CategoryRepositoriesTestFixture))]
 public class CategoryRepositoriesTest
