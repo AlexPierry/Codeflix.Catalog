@@ -1,4 +1,5 @@
 using Domain.Enum;
+using Domain.Events;
 using Domain.Exceptions;
 using Domain.SeedWork;
 using Domain.Validation;
@@ -82,6 +83,7 @@ public class Video : AggregateRoot
     public void UpdateMedia(string mediaPath)
     {
         Media = new Media(mediaPath);
+        RaiseEvent(new VideoUploadedEvent(Id, mediaPath));
     }
 
     public void UpdateTrailer(string mediaPath)
