@@ -116,6 +116,8 @@ public class VideoRepository : IVideoRepository
             .Take(input.PerPage)
             .ToListAsync(cancellationToken);
 
+        await AddRelationsToVideo(items, cancellationToken);
+
         return new SearchOutput<Video>(input.Page, input.PerPage, total, items);
     }
 
@@ -133,6 +135,30 @@ public class VideoRepository : IVideoRepository
         };
 
         return orderedQuery.ThenBy(x => x.CreatedAt);
+    }
+
+    private async Task AddRelationsToVideo(List<Video> videos, CancellationToken cancellationToken)
+    {
+        foreach (var video in videos)
+        {
+            var categories = await _videosCategories.AsNoTracking()
+                .Where(x => x.VideoId == video.Id)
+                .Select(x => x.CategoryId)
+                .ToListAsync(cancellationToken);
+            categories.ForEach(video.AddCategory);
+
+            var genres = await _videosGenres.AsNoTracking()
+                .Where(x => x.VideoId == video.Id)
+                .Select(x => x.GenreId)
+                .ToListAsync(cancellationToken);
+            genres.ForEach(video.AddGenre);
+
+            var castMembers = await _videosCastMembers.AsNoTracking()
+                .Where(x => x.VideoId == video.Id)
+                .Select(x => x.CastMemberId)
+                .ToListAsync(cancellationToken);
+            castMembers.ForEach(video.AddCastMember);
+        }
     }
 
     public async Task Update(Video video, CancellationToken cancellationToken)

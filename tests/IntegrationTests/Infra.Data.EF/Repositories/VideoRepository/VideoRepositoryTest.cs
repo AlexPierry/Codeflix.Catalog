@@ -609,8 +609,8 @@ public class VideoRepositoryTest
 
     [Theory(DisplayName = nameof(SearchOrdered))]
     [Trait("Integration/Infra.Data", "VideoRepository - Repositories")]
-    [InlineData("name", "asc")]
-    [InlineData("name", "desc")]
+    [InlineData("title", "asc")]
+    [InlineData("title", "desc")]
     [InlineData("id", "asc")]
     [InlineData("id", "desc")]
     [InlineData("createdAt", "asc")]
@@ -651,5 +651,68 @@ public class VideoRepositoryTest
         }
     }
 
+    [Fact(DisplayName = nameof(SearchReturnsAllRelations))]
+    [Trait("Integration/Infra.Data", "VideoRepository - Repositories")]
+    public async Task SearchReturnsAllRelations()
+    {
+        // Given
+        CodeflixCatalogDbContext dbContext = _fixture.CreateDbContext();
+        var exampleVideosList = _fixture.GetVideoList(15);
+        foreach (var video in exampleVideosList)
+        {
+            var castMembers = _fixture.GetRandomCastMemberList();
+            await dbContext.CastMembers.AddRangeAsync(castMembers, CancellationToken.None);
+            castMembers.ToList().ForEach(x =>
+            {
+                video.AddCastMember(x.Id);
+                dbContext.VideosCastMembers.Add(new VideosCastMembers(x.Id, video.Id));
+            });
+
+            var categories = _fixture.GetRandomCategoryList();
+            await dbContext.Categories.AddRangeAsync(categories, CancellationToken.None);
+            categories.ToList().ForEach(x =>
+            {
+                video.AddCategory(x.Id);
+                dbContext.VideosCategories.Add(new VideosCategories(x.Id, video.Id));
+            });
+
+            var genres = _fixture.GetRandomGenreList();
+            await dbContext.Genres.AddRangeAsync(genres, CancellationToken.None);
+            genres.ToList().ForEach(x =>
+            {
+                video.AddGenre(x.Id);
+                dbContext.VideosGenres.Add(new VideosGenres(x.Id, video.Id));
+            });
+        }
+
+        await dbContext.AddRangeAsync(exampleVideosList);
+        await dbContext.SaveChangesAsync(CancellationToken.None);
+        var videoRepository = new VideoRepository(dbContext);
+        var searchInput = new SearchInput(1, 20, "", "title", SearchOrder.Asc);
+
+        // When
+        var output = await videoRepository.Search(searchInput, CancellationToken.None);
+
+        // Then
+        output.Should().NotBeNull();
+        output.Items.Should().NotBeNull();
+        output.CurrentPage.Should().Be(searchInput.Page);
+        output.PerPage.Should().Be(searchInput.PerPage);
+        output.Total.Should().Be(exampleVideosList.Count());
+        output.Items.Should().HaveCount(exampleVideosList.Count);
+        foreach (var outputVideo in output.Items)
+        {
+            var expectedVideo = exampleVideosList.Find(v => v.Id == outputVideo.Id);
+            expectedVideo.Should().NotBeNull();
+            outputVideo.Should().NotBeNull();
+            outputVideo!.Id.Should().Be(expectedVideo!.Id);
+            outputVideo.Title.Should().Be(expectedVideo.Title);
+            outputVideo.Description.Should().Be(expectedVideo.Description);
+            outputVideo.CreatedAt.Should().Be(expectedVideo.CreatedAt);
+            outputVideo.Categories.Should().BeEquivalentTo(expectedVideo.Categories);
+            outputVideo.Genres.Should().BeEquivalentTo(expectedVideo.Genres);
+            outputVideo.CastMembers.Should().BeEquivalentTo(expectedVideo.CastMembers);
+        }
+    }
 
 }

@@ -651,6 +651,7 @@ public class UpdateVideoTest
             .Setup(x => x.Upload(
                 It.Is<string>(name => name == StorageFileName.Create(exampleVideo.Id, nameof(input.Banner), input.Banner.Extension)),
                 It.IsAny<Stream>(),
+                It.IsAny<string>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(bannerPath);
 
@@ -677,6 +678,7 @@ public class UpdateVideoTest
         _storageServiceMock.Verify(x => x.Upload(
             It.Is<string>(name => name == StorageFileName.Create(exampleVideo.Id, nameof(input.Banner), input.Banner.Extension)),
             It.IsAny<Stream>(),
+            It.IsAny<string>(),
             It.IsAny<CancellationToken>()), Times.Once);
 
         _unitOfWorkMock.Verify(x => x.Commit(It.IsAny<CancellationToken>()), Times.Once);
@@ -720,6 +722,7 @@ public class UpdateVideoTest
         _storageServiceMock.Verify(x => x.Upload(
             It.IsAny<string>(),
             It.IsAny<Stream>(),
+            It.IsAny<string>(),
             It.IsAny<CancellationToken>()), Times.Never);
 
         _unitOfWorkMock.Verify(x => x.Commit(It.IsAny<CancellationToken>()), Times.Once);
@@ -741,6 +744,7 @@ public class UpdateVideoTest
             .Setup(x => x.Upload(
                 It.Is<string>(name => name == StorageFileName.Create(exampleVideo.Id, nameof(input.Thumb), input.Thumb.Extension)),
                 It.IsAny<Stream>(),
+                It.IsAny<string>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(thumbPath);
 
@@ -767,6 +771,7 @@ public class UpdateVideoTest
         _storageServiceMock.Verify(x => x.Upload(
             It.Is<string>(name => name == StorageFileName.Create(exampleVideo.Id, nameof(input.Thumb), input.Thumb.Extension)),
             It.IsAny<Stream>(),
+            It.IsAny<string>(),
             It.IsAny<CancellationToken>()), Times.Once);
 
         _unitOfWorkMock.Verify(x => x.Commit(It.IsAny<CancellationToken>()), Times.Once);
@@ -810,6 +815,7 @@ public class UpdateVideoTest
         _storageServiceMock.Verify(x => x.Upload(
             It.IsAny<string>(),
             It.IsAny<Stream>(),
+            It.IsAny<string>(),
             It.IsAny<CancellationToken>()), Times.Never);
 
         _unitOfWorkMock.Verify(x => x.Commit(It.IsAny<CancellationToken>()), Times.Once);
@@ -831,6 +837,7 @@ public class UpdateVideoTest
             .Setup(x => x.Upload(
                 It.Is<string>(name => name == StorageFileName.Create(exampleVideo.Id, nameof(input.ThumbHalf), input.ThumbHalf.Extension)),
                 It.IsAny<Stream>(),
+                It.IsAny<string>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(thumbHalfPath);
 
@@ -857,6 +864,7 @@ public class UpdateVideoTest
         _storageServiceMock.Verify(x => x.Upload(
             It.Is<string>(name => name == StorageFileName.Create(exampleVideo.Id, nameof(input.ThumbHalf), input.ThumbHalf.Extension)),
             It.IsAny<Stream>(),
+            It.IsAny<string>(),
             It.IsAny<CancellationToken>()), Times.Once);
 
         _unitOfWorkMock.Verify(x => x.Commit(It.IsAny<CancellationToken>()), Times.Once);
@@ -900,6 +908,7 @@ public class UpdateVideoTest
         _storageServiceMock.Verify(x => x.Upload(
             It.IsAny<string>(),
             It.IsAny<Stream>(),
+            It.IsAny<string>(),
             It.IsAny<CancellationToken>()), Times.Never);
 
         _unitOfWorkMock.Verify(x => x.Commit(It.IsAny<CancellationToken>()), Times.Once);

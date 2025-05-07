@@ -4,6 +4,6 @@ namespace Application.Interfaces;
 
 public interface IStorageService
 {
-    Task Delete(string v, CancellationToken cancellationToken);
-    Task<string> Upload(string fileName, Stream stream, CancellationToken cancellationToken);
+    Task Delete(string filePath, CancellationToken cancellationToken);
+    Task<string> Upload(string fileName, Stream stream, string contentType, CancellationToken cancellationToken);
 }

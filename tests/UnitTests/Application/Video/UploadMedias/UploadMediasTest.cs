@@ -40,7 +40,7 @@ public class UploadMediasTest
         var validInput = _fixture.GetValidUploadMediasInput(video.Id);
         _videoRepositoryMock.Setup(x => x.Get(It.Is<Guid>(x => x == video.Id), It.IsAny<CancellationToken>()))
             .ReturnsAsync(video);
-        _storageServiceMock.Setup(x => x.Upload(It.IsAny<string>(), It.IsAny<Stream>(), It.IsAny<CancellationToken>()))
+        _storageServiceMock.Setup(x => x.Upload(It.IsAny<string>(), It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(Guid.NewGuid().ToString());
 
         // Act
@@ -49,7 +49,7 @@ public class UploadMediasTest
         // Assert
         _videoRepositoryMock.VerifyAll();
         _unitOfWorkMock.Verify(x => x.Commit(CancellationToken.None), Times.Once);
-        _storageServiceMock.Verify(x => x.Upload(It.IsAny<string>(), It.IsAny<Stream>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
+        _storageServiceMock.Verify(x => x.Upload(It.IsAny<string>(), It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
     }
 
     [Fact(DisplayName = nameof(ThrowsWhenVideoNotFound))]
@@ -81,9 +81,9 @@ public class UploadMediasTest
         var trailerFileName = StorageFileName.Create(video.Id, nameof(video.Trailer), validInput.trailerFile!.Extension);
         _videoRepositoryMock.Setup(x => x.Get(It.Is<Guid>(x => x == video.Id), It.IsAny<CancellationToken>()))
             .ReturnsAsync(video);
-        _storageServiceMock.Setup(x => x.Upload(It.Is<string>(x => x == videoFileName), It.IsAny<Stream>(), It.IsAny<CancellationToken>()))
+        _storageServiceMock.Setup(x => x.Upload(It.Is<string>(x => x == videoFileName), It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(videoFileName);
-        _storageServiceMock.Setup(x => x.Upload(It.Is<string>(x => x == trailerFileName), It.IsAny<Stream>(), It.IsAny<CancellationToken>()))
+        _storageServiceMock.Setup(x => x.Upload(It.Is<string>(x => x == trailerFileName), It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new Exception("Upload error"));
 
         // Act
@@ -93,7 +93,7 @@ public class UploadMediasTest
         await action.Should().ThrowAsync<Exception>().WithMessage("Upload error");
         _videoRepositoryMock.VerifyAll();
         _unitOfWorkMock.Verify(x => x.Commit(CancellationToken.None), Times.Never);
-        _storageServiceMock.Verify(x => x.Upload(It.IsAny<string>(), It.IsAny<Stream>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
+        _storageServiceMock.Verify(x => x.Upload(It.IsAny<string>(), It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
         _storageServiceMock.Verify(x => x.Delete(It.Is<string>(x => x == videoFileName), It.IsAny<CancellationToken>()), Times.Exactly(1));
     }
 
@@ -108,9 +108,9 @@ public class UploadMediasTest
         var trailerFileName = StorageFileName.Create(video.Id, nameof(video.Trailer), validInput.trailerFile!.Extension);
         _videoRepositoryMock.Setup(x => x.Get(It.Is<Guid>(x => x == video.Id), It.IsAny<CancellationToken>()))
             .ReturnsAsync(video);
-        _storageServiceMock.Setup(x => x.Upload(It.Is<string>(x => x == videoFileName), It.IsAny<Stream>(), It.IsAny<CancellationToken>()))
+        _storageServiceMock.Setup(x => x.Upload(It.Is<string>(x => x == videoFileName), It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(videoFileName);
-        _storageServiceMock.Setup(x => x.Upload(It.Is<string>(x => x == trailerFileName), It.IsAny<Stream>(), It.IsAny<CancellationToken>()))
+        _storageServiceMock.Setup(x => x.Upload(It.Is<string>(x => x == trailerFileName), It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(trailerFileName);
         _unitOfWorkMock.Setup(x => x.Commit(It.IsAny<CancellationToken>()))
             .ThrowsAsync(new Exception("Commit error"));
@@ -122,7 +122,7 @@ public class UploadMediasTest
         await action.Should().ThrowAsync<Exception>().WithMessage("Commit error");
         _videoRepositoryMock.VerifyAll();
         _unitOfWorkMock.Verify(x => x.Commit(CancellationToken.None), Times.Once);
-        _storageServiceMock.Verify(x => x.Upload(It.IsAny<string>(), It.IsAny<Stream>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
+        _storageServiceMock.Verify(x => x.Upload(It.IsAny<string>(), It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
         _storageServiceMock.Verify(x => x.Delete(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
     }
 
@@ -138,7 +138,7 @@ public class UploadMediasTest
         var videoFileName = StorageFileName.Create(video.Id, nameof(video.Media), validInput.videoFile!.Extension);
         _videoRepositoryMock.Setup(x => x.Get(It.Is<Guid>(x => x == video.Id), It.IsAny<CancellationToken>()))
             .ReturnsAsync(video);
-        _storageServiceMock.Setup(x => x.Upload(It.Is<string>(x => x == videoFileName), It.IsAny<Stream>(), It.IsAny<CancellationToken>()))
+        _storageServiceMock.Setup(x => x.Upload(It.Is<string>(x => x == videoFileName), It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(videoFileName);
         _unitOfWorkMock.Setup(x => x.Commit(It.IsAny<CancellationToken>()))
             .ThrowsAsync(new Exception("Commit error"));
@@ -150,7 +150,7 @@ public class UploadMediasTest
         await action.Should().ThrowAsync<Exception>().WithMessage("Commit error");
         _videoRepositoryMock.VerifyAll();
         _unitOfWorkMock.Verify(x => x.Commit(CancellationToken.None), Times.Once);
-        _storageServiceMock.Verify(x => x.Upload(It.Is<string>(x => x == videoFileName), It.IsAny<Stream>(), It.IsAny<CancellationToken>()), Times.Exactly(1));
+        _storageServiceMock.Verify(x => x.Upload(It.Is<string>(x => x == videoFileName), It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Exactly(1));
         _storageServiceMock.Verify(x => x.Delete(It.Is<string>(x => x == videoFileName), It.IsAny<CancellationToken>()), Times.Exactly(1));
     }
 }

@@ -139,21 +139,21 @@ public class UpdateVideo : IUpdateVideo
         if (input.Thumb is not null)
         {
             var fileName = StorageFileName.Create(video.Id, nameof(video.Thumb), input.Thumb.Extension);
-            var thumbPath = await _storageService.Upload(fileName, input.Thumb.FileStream, cancellationToken);
+            var thumbPath = await _storageService.Upload(fileName, input.Thumb.FileStream, input.Thumb.ContentType, cancellationToken);
             video.UpdateThumb(thumbPath);
         }
 
         if (input.Banner is not null)
         {
             var fileName = StorageFileName.Create(video.Id, nameof(video.Banner), input.Banner.Extension);
-            var bannerPath = await _storageService.Upload(fileName, input.Banner.FileStream, cancellationToken);
+            var bannerPath = await _storageService.Upload(fileName, input.Banner.FileStream, input.Banner.ContentType, cancellationToken);
             video.UpdateBanner(bannerPath);
         }
 
         if (input.ThumbHalf is not null)
         {
             var fileName = StorageFileName.Create(video.Id, nameof(video.ThumbHalf), input.ThumbHalf.Extension);
-            var thumbHalfPath = await _storageService.Upload(fileName, input.ThumbHalf.FileStream, cancellationToken);
+            var thumbHalfPath = await _storageService.Upload(fileName, input.ThumbHalf.FileStream, input.ThumbHalf.ContentType, cancellationToken);
             video.UpdateThumbHalf(thumbHalfPath);
         }
     }
