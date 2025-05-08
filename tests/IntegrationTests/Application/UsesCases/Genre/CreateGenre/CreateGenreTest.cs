@@ -1,9 +1,12 @@
+using Application;
 using Application.Exceptions;
 using Application.UseCases.Genre.CreateGenre;
 using FluentAssertions;
 using Infra.Data.EF;
 using Infra.Data.EF.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace IntegrationTest.Application.UseCases.Genre;
 
@@ -25,7 +28,15 @@ public class CreateGenreTest
         var dbContext = _fixture.CreateDbContext();
         var genreRepository = new GenreRepository(dbContext);
         var categoryRepository = new CategoryRepository(dbContext);
-        var unitOfWork = new UnitOfWork(dbContext);
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddLogging();
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+        var eventPublisher = new DomainEventPublisher(serviceProvider);
+        var unitOfWork = new UnitOfWork(
+            dbContext,
+            eventPublisher,
+            serviceProvider.GetRequiredService<ILogger<UnitOfWork>>()
+        );
 
         var useCase = new CreateGenre(genreRepository, unitOfWork, categoryRepository);
         var input = _fixture.GetInput();
@@ -56,7 +67,15 @@ public class CreateGenreTest
         var genreRepository = new GenreRepository(dbContext);
         var categoryRepository = new CategoryRepository(dbContext);
 
-        var unitOfWork = new UnitOfWork(dbContext);
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddLogging();
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+        var eventPublisher = new DomainEventPublisher(serviceProvider);
+        var unitOfWork = new UnitOfWork(
+            dbContext,
+            eventPublisher,
+            serviceProvider.GetRequiredService<ILogger<UnitOfWork>>()
+        );
 
         var useCase = new CreateGenre(genreRepository, unitOfWork, categoryRepository);
         var input = new CreateGenreInput(_fixture.GetInput().Name);
@@ -89,7 +108,15 @@ public class CreateGenreTest
         await dbContext.SaveChangesAsync();
         var genreRepository = new GenreRepository(dbContext);
         var categoryRepository = new CategoryRepository(dbContext);
-        var unitOfWork = new UnitOfWork(dbContext);
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddLogging();
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+        var eventPublisher = new DomainEventPublisher(serviceProvider);
+        var unitOfWork = new UnitOfWork(
+            dbContext,
+            eventPublisher,
+            serviceProvider.GetRequiredService<ILogger<UnitOfWork>>()
+        );
 
         var useCase = new CreateGenre(genreRepository, unitOfWork, categoryRepository);
         var input = _fixture.GetInput(exampleCategoriesList.Select(c => c.Id).ToList());
@@ -130,7 +157,15 @@ public class CreateGenreTest
         await dbContext.SaveChangesAsync();
         var genreRepository = new GenreRepository(dbContext);
         var categoryRepository = new CategoryRepository(dbContext);
-        var unitOfWork = new UnitOfWork(dbContext);
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddLogging();
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+        var eventPublisher = new DomainEventPublisher(serviceProvider);
+        var unitOfWork = new UnitOfWork(
+            dbContext,
+            eventPublisher,
+            serviceProvider.GetRequiredService<ILogger<UnitOfWork>>()
+        );
 
         var useCase = new CreateGenre(genreRepository, unitOfWork, categoryRepository);
         var input = _fixture.GetInput(exampleCategoriesList.Select(c => c.Id).ToList());

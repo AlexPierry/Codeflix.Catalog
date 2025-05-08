@@ -25,7 +25,7 @@ public class DomainEventPublisherTest
         DomainEvent @event = new DomainEventToBeHandled();
 
         // Act
-        // (dynamic) hack para forçar o compilador a enxergar o tipo correto
+        // (dynamic) hack para forçar o compilador a enxergar o tipo derivado correto
         await domainEventPublisher.PublishAsync((dynamic)@event, CancellationToken.None);
 
         // Assert

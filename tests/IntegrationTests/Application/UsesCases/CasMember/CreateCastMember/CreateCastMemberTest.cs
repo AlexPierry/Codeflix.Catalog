@@ -1,6 +1,9 @@
+using Application;
 using FluentAssertions;
 using Infra.Data.EF;
 using Infra.Data.EF.Repositories;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using UseCase = Application.UseCases.CastMember;
 
 namespace IntegrationTest.Application.UseCases.CastMember;
@@ -22,7 +25,15 @@ public class CreateCastMemberTest
         // Given
         var dbContext = _fixture.CreateDbContext();
         var repository = new CastMemberRepository(dbContext);
-        var unitOfWorkMock = new UnitOfWork(dbContext);
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddLogging();
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+        var eventPublisher = new DomainEventPublisher(serviceProvider);
+        var unitOfWorkMock = new UnitOfWork(
+            dbContext,
+            eventPublisher,
+            serviceProvider.GetRequiredService<ILogger<UnitOfWork>>()
+        );
 
         var useCase = new UseCase.CreateCastMember(repository, unitOfWorkMock);
         var input = _fixture.GetInput();

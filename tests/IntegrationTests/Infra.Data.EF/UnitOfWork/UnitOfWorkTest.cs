@@ -1,6 +1,12 @@
+using Application;
+using Domain.SeedWork;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Moq;
 using UnitOfWorkInfra = Infra.Data.EF;
+
 namespace IntegrationTest.Infra.Data.EF.UnitOfWork;
 
 [Collection(nameof(UnitOfWorkTestFixture))]
@@ -21,8 +27,21 @@ public class UnitOfWorkTest
         var dbId = Guid.NewGuid().ToString();
         var dbContext = _fixture.CreateDbContext(false, dbId);
         var exampleCategoriesList = _fixture.GetExampleCategoriesList();
+        var categoryWithEvent = exampleCategoriesList.First();
+        var @event = new DomainEventFake();
+        categoryWithEvent.RaiseEvent(@event);
+        var eventHandlerMock = new Mock<IDomainEventHandler<DomainEventFake>>();
         await dbContext.AddRangeAsync(exampleCategoriesList);
-        var unitOfWork = new UnitOfWorkInfra.UnitOfWork(dbContext);
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddLogging();
+        serviceCollection.AddSingleton(eventHandlerMock.Object);
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+        var eventPublisher = new DomainEventPublisher(serviceProvider);
+        var unitOfWork = new UnitOfWorkInfra.UnitOfWork(
+            dbContext,
+            eventPublisher,
+            serviceProvider.GetRequiredService<ILogger<UnitOfWorkInfra.UnitOfWork>>()
+        );
 
         // When
         await unitOfWork.Commit(CancellationToken.None);
@@ -32,6 +51,8 @@ public class UnitOfWorkTest
         var savedCategories = assertDbContext.Categories.AsNoTracking().ToList();
 
         savedCategories.Should().HaveCount(exampleCategoriesList.Count);
+        eventHandlerMock.Verify(x => x.HandleAsync(@event, It.IsAny<CancellationToken>()), Times.Once);
+        categoryWithEvent.DomainEvents.Should().BeEmpty();
     }
 
     [Fact(DisplayName = nameof(RollbackOk))]
@@ -41,7 +62,15 @@ public class UnitOfWorkTest
         // Given
         var dbId = Guid.NewGuid().ToString();
         var dbContext = _fixture.CreateDbContext(false, dbId);
-        var unitOfWork = new UnitOfWorkInfra.UnitOfWork(dbContext);
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddLogging();
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+        var eventPublisher = new DomainEventPublisher(serviceProvider);
+        var unitOfWork = new UnitOfWorkInfra.UnitOfWork(
+            dbContext,
+            eventPublisher,
+            serviceProvider.GetRequiredService<ILogger<UnitOfWorkInfra.UnitOfWork>>()
+        );
 
         // When
         var task = async () => await unitOfWork.Rollback(CancellationToken.None);

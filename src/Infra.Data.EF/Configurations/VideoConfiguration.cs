@@ -27,5 +27,6 @@ public class VideoConfiguration : IEntityTypeConfiguration<Video>
         });
         builder.HasOne(video => video.Media).WithOne().HasForeignKey<Media>();
         builder.HasOne(video => video.Trailer).WithOne().HasForeignKey<Media>();
+        builder.Ignore(video => video.DomainEvents);
     }
 }

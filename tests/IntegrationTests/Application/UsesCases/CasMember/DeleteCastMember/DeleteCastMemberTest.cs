@@ -1,8 +1,11 @@
+using Application;
 using Application.Exceptions;
 using FluentAssertions;
 using Infra.Data.EF;
 using Infra.Data.EF.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using UseCase = Application.UseCases.CastMember;
 
 namespace IntegrationTest.Application.UseCases.CastMember;
@@ -30,7 +33,16 @@ public class DeleteCastMemberTest
 
         var actDbContext = _fixture.CreateDbContext(true);
         var repository = new CastMemberRepository(actDbContext);
-        var unitOfWork = new UnitOfWork(actDbContext);
+
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddLogging();
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+        var eventPublisher = new DomainEventPublisher(serviceProvider);
+        var unitOfWork = new UnitOfWork(
+            actDbContext,
+            eventPublisher,
+            serviceProvider.GetRequiredService<ILogger<UnitOfWork>>()
+        );
 
         var input = new UseCase.DeleteCastMemberInput(exampleCastMember.Id);
         var useCase = new UseCase.DeleteCastMember(repository, unitOfWork);
@@ -53,7 +65,15 @@ public class DeleteCastMemberTest
         // Given
         var dbContext = _fixture.CreateDbContext();
         var repository = new CastMemberRepository(dbContext);
-        var unitOfWork = new UnitOfWork(dbContext);
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddLogging();
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+        var eventPublisher = new DomainEventPublisher(serviceProvider);
+        var unitOfWork = new UnitOfWork(
+            dbContext,
+            eventPublisher,
+            serviceProvider.GetRequiredService<ILogger<UnitOfWork>>()
+        );
         var exampleList = _fixture.GetExampleCastMembersList(10);
         await dbContext.AddRangeAsync(exampleList);
         dbContext.SaveChanges();

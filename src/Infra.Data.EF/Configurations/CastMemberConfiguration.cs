@@ -8,6 +8,7 @@ internal class CastMemberConfiguration : IEntityTypeConfiguration<CastMember>
 {
     public void Configure(EntityTypeBuilder<CastMember> builder)
     {
-        builder.HasKey(genre => genre.Id);
+        builder.HasKey(castMember => castMember.Id);
+        builder.Ignore(castMember => castMember.DomainEvents);
     }
 }

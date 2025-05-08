@@ -1,9 +1,12 @@
+using Application;
 using Application.Exceptions;
 using Application.UseCases.Genre.UpdateGenre;
 using FluentAssertions;
 using Infra.Data.EF;
 using Infra.Data.EF.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace IntegrationTest.Application.UseCases.Genre;
 
@@ -29,7 +32,15 @@ public class UpdateGenreTest
         await dbContext.SaveChangesAsync();
         var genreRepository = new GenreRepository(dbContext);
         var categoryRepository = new CategoryRepository(dbContext);
-        var unitOfWork = new UnitOfWork(dbContext);
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddLogging();
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+        var eventPublisher = new DomainEventPublisher(serviceProvider);
+        var unitOfWork = new UnitOfWork(
+            dbContext,
+            eventPublisher,
+            serviceProvider.GetRequiredService<ILogger<UnitOfWork>>()
+        );
         var useCase = new UpdateGenre(genreRepository, unitOfWork, categoryRepository);
         exampleGenre.Update(_fixture.GetValidGenreName());
         if (exampleGenre.IsActive)
@@ -74,7 +85,15 @@ public class UpdateGenreTest
         await dbContext.SaveChangesAsync();
         var genreRepository = new GenreRepository(dbContext);
         var categoryRepository = new CategoryRepository(dbContext);
-        var unitOfWork = new UnitOfWork(dbContext);
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddLogging();
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+        var eventPublisher = new DomainEventPublisher(serviceProvider);
+        var unitOfWork = new UnitOfWork(
+            dbContext,
+            eventPublisher,
+            serviceProvider.GetRequiredService<ILogger<UnitOfWork>>()
+        );
         var useCase = new UpdateGenre(genreRepository, unitOfWork, categoryRepository);
         exampleGenre.Update(_fixture.GetValidGenreName());
         if (exampleGenre.IsActive)
@@ -128,7 +147,15 @@ public class UpdateGenreTest
         await dbContext.SaveChangesAsync();
         var genreRepository = new GenreRepository(dbContext);
         var categoryRepository = new CategoryRepository(dbContext);
-        var unitOfWork = new UnitOfWork(dbContext);
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddLogging();
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+        var eventPublisher = new DomainEventPublisher(serviceProvider);
+        var unitOfWork = new UnitOfWork(
+            dbContext,
+            eventPublisher,
+            serviceProvider.GetRequiredService<ILogger<UnitOfWork>>()
+        );
         var useCase = new UpdateGenre(genreRepository, unitOfWork, categoryRepository);
         exampleGenre.Update(_fixture.GetValidGenreName());
         if (exampleGenre.IsActive)
@@ -167,7 +194,15 @@ public class UpdateGenreTest
         await dbContext.SaveChangesAsync();
         var genreRepository = new GenreRepository(dbContext);
         var categoryRepository = new CategoryRepository(dbContext);
-        var unitOfWork = new UnitOfWork(dbContext);
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddLogging();
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+        var eventPublisher = new DomainEventPublisher(serviceProvider);
+        var unitOfWork = new UnitOfWork(
+            dbContext,
+            eventPublisher,
+            serviceProvider.GetRequiredService<ILogger<UnitOfWork>>()
+        );
         var useCase = new UpdateGenre(genreRepository, unitOfWork, categoryRepository);
         var input = _fixture.GetInput(exampleGenre);
         var randomGenreId = Guid.NewGuid();
@@ -195,7 +230,15 @@ public class UpdateGenreTest
         await dbContext.SaveChangesAsync();
         var genreRepository = new GenreRepository(dbContext);
         var categoryRepository = new CategoryRepository(dbContext);
-        var unitOfWork = new UnitOfWork(dbContext);
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddLogging();
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+        var eventPublisher = new DomainEventPublisher(serviceProvider);
+        var unitOfWork = new UnitOfWork(
+            dbContext,
+            eventPublisher,
+            serviceProvider.GetRequiredService<ILogger<UnitOfWork>>()
+        );
         var useCase = new UpdateGenre(genreRepository, unitOfWork, categoryRepository);
         exampleGenre.Update(_fixture.GetValidGenreName());
         if (exampleGenre.IsActive)
@@ -247,7 +290,15 @@ public class UpdateGenreTest
         await dbContext.SaveChangesAsync();
         var genreRepository = new GenreRepository(dbContext);
         var categoryRepository = new CategoryRepository(dbContext);
-        var unitOfWork = new UnitOfWork(dbContext);
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddLogging();
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+        var eventPublisher = new DomainEventPublisher(serviceProvider);
+        var unitOfWork = new UnitOfWork(
+            dbContext,
+            eventPublisher,
+            serviceProvider.GetRequiredService<ILogger<UnitOfWork>>()
+        );
         var useCase = new UpdateGenre(genreRepository, unitOfWork, categoryRepository);
         exampleGenre.Update(_fixture.GetValidGenreName());
         if (exampleGenre.IsActive)

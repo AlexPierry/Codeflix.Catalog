@@ -1,9 +1,12 @@
+using Application;
 using Application.Exceptions;
 using Application.UseCases.Category.UpdateCategory;
 using Domain.Exceptions;
 using FluentAssertions;
 using Infra.Data.EF;
 using Infra.Data.EF.Repositories;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Entities = Domain.Entity;
 using UseCase = Application.UseCases.Category.UpdateCategory;
 
@@ -35,9 +38,17 @@ public class UpdateCategoryTest
         await dbContext.SaveChangesAsync();
         trackingInfo.State = Microsoft.EntityFrameworkCore.EntityState.Detached;
         var repository = new CategoryRepository(dbContext);
-        var unitOfWorkMock = new UnitOfWork(dbContext);
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddLogging();
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+        var eventPublisher = new DomainEventPublisher(serviceProvider);
+        var unitOfWork = new UnitOfWork(
+            dbContext,
+            eventPublisher,
+            serviceProvider.GetRequiredService<ILogger<UnitOfWork>>()
+        );
 
-        var useCase = new UseCase.UpdateCategory(repository, unitOfWorkMock);
+        var useCase = new UseCase.UpdateCategory(repository, unitOfWork);
 
         // When
         var output = await useCase.Handle(input, CancellationToken.None);
@@ -75,9 +86,17 @@ public class UpdateCategoryTest
         await dbContext.SaveChangesAsync();
         trackingInfo.State = Microsoft.EntityFrameworkCore.EntityState.Detached;
         var repository = new CategoryRepository(dbContext);
-        var unitOfWorkMock = new UnitOfWork(dbContext);
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddLogging();
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+        var eventPublisher = new DomainEventPublisher(serviceProvider);
+        var unitOfWork = new UnitOfWork(
+            dbContext,
+            eventPublisher,
+            serviceProvider.GetRequiredService<ILogger<UnitOfWork>>()
+        );
 
-        var useCase = new UseCase.UpdateCategory(repository, unitOfWorkMock);
+        var useCase = new UseCase.UpdateCategory(repository, unitOfWork);
 
         // When
         var output = await useCase.Handle(input, CancellationToken.None);
@@ -115,9 +134,17 @@ public class UpdateCategoryTest
         await dbContext.SaveChangesAsync();
         trackingInfo.State = Microsoft.EntityFrameworkCore.EntityState.Detached;
         var repository = new CategoryRepository(dbContext);
-        var unitOfWorkMock = new UnitOfWork(dbContext);
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddLogging();
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+        var eventPublisher = new DomainEventPublisher(serviceProvider);
+        var unitOfWork = new UnitOfWork(
+            dbContext,
+            eventPublisher,
+            serviceProvider.GetRequiredService<ILogger<UnitOfWork>>()
+        );
 
-        var useCase = new UseCase.UpdateCategory(repository, unitOfWorkMock);
+        var useCase = new UseCase.UpdateCategory(repository, unitOfWork);
 
         // When
         var output = await useCase.Handle(input, CancellationToken.None);
@@ -148,9 +175,17 @@ public class UpdateCategoryTest
         await dbContext.AddRangeAsync(_fixture.GetExampleCategoriesList());
         await dbContext.SaveChangesAsync();
         var repository = new CategoryRepository(dbContext);
-        var unitOfWorkMock = new UnitOfWork(dbContext);
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddLogging();
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+        var eventPublisher = new DomainEventPublisher(serviceProvider);
+        var unitOfWork = new UnitOfWork(
+            dbContext,
+            eventPublisher,
+            serviceProvider.GetRequiredService<ILogger<UnitOfWork>>()
+        );
 
-        var useCase = new UseCase.UpdateCategory(repository, unitOfWorkMock);
+        var useCase = new UseCase.UpdateCategory(repository, unitOfWork);
 
         // When
         var task = async () => await useCase.Handle(input, CancellationToken.None);
@@ -174,9 +209,17 @@ public class UpdateCategoryTest
         await dbContext.AddRangeAsync(exampleCategories);
         await dbContext.SaveChangesAsync();
         var repository = new CategoryRepository(dbContext);
-        var unitOfWorkMock = new UnitOfWork(dbContext);
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddLogging();
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+        var eventPublisher = new DomainEventPublisher(serviceProvider);
+        var unitOfWork = new UnitOfWork(
+            dbContext,
+            eventPublisher,
+            serviceProvider.GetRequiredService<ILogger<UnitOfWork>>()
+        );
 
-        var useCase = new UseCase.UpdateCategory(repository, unitOfWorkMock);
+        var useCase = new UseCase.UpdateCategory(repository, unitOfWork);
         invalidInput.Id = exampleCategories[0].Id;
 
         // When

@@ -1,8 +1,11 @@
+using Application;
 using Application.Exceptions;
 using FluentAssertions;
 using Infra.Data.EF;
 using Infra.Data.EF.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using UseCase = Application.UseCases.Category.DeleteCategory;
 
 namespace IntegrationTest.Application.UseCases.Category;
@@ -24,7 +27,15 @@ public class DeleteCategoryTest
         // Given
         var dbContext = _fixture.CreateDbContext();
         var repository = new CategoryRepository(dbContext);
-        var unitOfWork = new UnitOfWork(dbContext);
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddLogging();
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+        var eventPublisher = new DomainEventPublisher(serviceProvider);
+        var unitOfWork = new UnitOfWork(
+            dbContext,
+            eventPublisher,
+            serviceProvider.GetRequiredService<ILogger<UnitOfWork>>()
+        );
         var exampleCategory = _fixture.GetExampleCategory();
         var tracking = await dbContext.AddAsync(exampleCategory);
         var exampleList = _fixture.GetExampleCategoriesList(10);
@@ -54,7 +65,15 @@ public class DeleteCategoryTest
         // Given
         var dbContext = _fixture.CreateDbContext();
         var repository = new CategoryRepository(dbContext);
-        var unitOfWork = new UnitOfWork(dbContext);
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddLogging();
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+        var eventPublisher = new DomainEventPublisher(serviceProvider);
+        var unitOfWork = new UnitOfWork(
+            dbContext,
+            eventPublisher,
+            serviceProvider.GetRequiredService<ILogger<UnitOfWork>>()
+        );
         var exampleList = _fixture.GetExampleCategoriesList(10);
         await dbContext.AddRangeAsync(exampleList);
         dbContext.SaveChanges();

@@ -1,8 +1,11 @@
+using Application;
 using Application.Exceptions;
 using Application.UseCases.CastMember;
 using FluentAssertions;
 using Infra.Data.EF;
 using Infra.Data.EF.Repositories;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace IntegrationTest.Application.UseCases.CastMember;
 
@@ -29,7 +32,16 @@ public class UpdateCastMemberTest
 
         var actDbContext = _fixture.CreateDbContext(true);
         var repository = new CastMemberRepository(actDbContext);
-        var unitOfWork = new UnitOfWork(actDbContext);
+
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddLogging();
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+        var eventPublisher = new DomainEventPublisher(serviceProvider);
+        var unitOfWork = new UnitOfWork(
+            dbContext,
+            eventPublisher,
+            serviceProvider.GetRequiredService<ILogger<UnitOfWork>>()
+        );
 
         var useCase = new UpdateCastMember(repository, unitOfWork);
         exampleCastMember.Update(_fixture.GetValidName(), _fixture.GetRandomCastMemberType());
@@ -60,7 +72,17 @@ public class UpdateCastMemberTest
         // Given
         var dbContext = _fixture.CreateDbContext();
         var repository = new CastMemberRepository(dbContext);
-        var unitOfWork = new UnitOfWork(dbContext);
+        
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddLogging();
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+        var eventPublisher = new DomainEventPublisher(serviceProvider);
+        var unitOfWork = new UnitOfWork(
+            dbContext,
+            eventPublisher,
+            serviceProvider.GetRequiredService<ILogger<UnitOfWork>>()
+        );
+
         var exampleList = _fixture.GetExampleCastMembersList(10);
         await dbContext.AddRangeAsync(exampleList);
         dbContext.SaveChanges();

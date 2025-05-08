@@ -1,8 +1,11 @@
+using Application;
 using Domain.Exceptions;
 using FluentAssertions;
 using Infra.Data.EF;
 using Infra.Data.EF.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using UseCase = Application.UseCases.Category.CreateCategory;
 
 namespace IntegrationTest.Application.UseCases.Category;
@@ -24,9 +27,16 @@ public class CreateCategoryTest
         // Given
         var dbContext = _fixture.CreateDbContext();
         var repository = new CategoryRepository(dbContext);
-        var unitOfWorkMock = new UnitOfWork(dbContext);
-
-        var useCase = new UseCase.CreateCategory(repository, unitOfWorkMock);
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddLogging();
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+        var eventPublisher = new DomainEventPublisher(serviceProvider);
+        var unitOfWork = new UnitOfWork(
+            dbContext,
+            eventPublisher,
+            serviceProvider.GetRequiredService<ILogger<UnitOfWork>>()
+        );
+        var useCase = new UseCase.CreateCategory(repository, unitOfWork);
         var input = _fixture.GetInput();
 
         // When
@@ -55,9 +65,16 @@ public class CreateCategoryTest
         // Given
         var dbContext = _fixture.CreateDbContext();
         var repository = new CategoryRepository(dbContext);
-        var unitOfWorkMock = new UnitOfWork(dbContext);
-
-        var useCase = new UseCase.CreateCategory(repository, unitOfWorkMock);
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddLogging();
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+        var eventPublisher = new DomainEventPublisher(serviceProvider);
+        var unitOfWork = new UnitOfWork(
+            dbContext,
+            eventPublisher,
+            serviceProvider.GetRequiredService<ILogger<UnitOfWork>>()
+        );
+        var useCase = new UseCase.CreateCategory(repository, unitOfWork);
         var input = new UseCase.CreateCategoryInput(_fixture.GetInput().Name);
 
         // When
@@ -86,9 +103,17 @@ public class CreateCategoryTest
         // Given
         var dbContext = _fixture.CreateDbContext();
         var repository = new CategoryRepository(dbContext);
-        var unitOfWorkMock = new UnitOfWork(dbContext);
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddLogging();
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+        var eventPublisher = new DomainEventPublisher(serviceProvider);
+        var unitOfWork = new UnitOfWork(
+            dbContext,
+            eventPublisher,
+            serviceProvider.GetRequiredService<ILogger<UnitOfWork>>()
+        );
 
-        var useCase = new UseCase.CreateCategory(repository, unitOfWorkMock);
+        var useCase = new UseCase.CreateCategory(repository, unitOfWork);
         var exampleCategory = _fixture.GetExampleCategory();
         var input = new UseCase.CreateCategoryInput(exampleCategory.Name, exampleCategory.Description);
 
@@ -122,9 +147,17 @@ public class CreateCategoryTest
         // Given
         var dbContext = _fixture.CreateDbContext();
         var repository = new CategoryRepository(dbContext);
-        var unitOfWorkMock = new UnitOfWork(dbContext);
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddLogging();
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+        var eventPublisher = new DomainEventPublisher(serviceProvider);
+        var unitOfWork = new UnitOfWork(
+            dbContext,
+            eventPublisher,
+            serviceProvider.GetRequiredService<ILogger<UnitOfWork>>()
+        );
 
-        var useCase = new UseCase.CreateCategory(repository, unitOfWorkMock);
+        var useCase = new UseCase.CreateCategory(repository, unitOfWork);
 
         // When
         Func<Task> task = async () => await useCase.Handle(input, CancellationToken.None);
